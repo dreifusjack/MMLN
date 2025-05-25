@@ -37,7 +37,7 @@ sim <- simulate_mixed_mln_data(
 
 # 2. Fit a fixed-effects MLN model
 res_f <- FMLN(
-  W            = sim$W,
+  Y            = sim$Y,
   X            = sim$X,
   n_iter       = 2000,
   burn_in      = 500,
@@ -48,7 +48,7 @@ res_f <- FMLN(
 
 # 3. Fit a mixed-effects MLN model
 res_m <- MMLN(
-  W            = sim$W,
+  Y            = sim$Y,
   X            = sim$X,
   Z            = sim$Z,
   n_iter       = 2000,
@@ -66,14 +66,14 @@ sim$beta
 par(mfrow=c(1,1))
 
 # 5. Compute model DICs
-ll_chain <- sapply(res_m$y_chain,
-                   function(Y) dmnl_loglik(Y, sim$W))
-Y_hat   <- alr(compress_counts(sim$W) / rowSums(sim$W))
-ll_hat  <- dmnl_loglik(Y_hat, sim$W)
+ll_chain <- sapply(res_m$w_chain,
+                   function(W) dmnl_loglik(W, sim$Y))
+W_hat   <- alr(compress_counts(sim$Y) / rowSums(sim$Y))
+ll_hat  <- dmnl_loglik(W_hat, sim$Y)
 dic_res <- compute_dic(ll_chain, ll_hat)
 
 # 6. Posterior predictive simulation and Mahalanobis residuals
-W_pred_list <- lapply(seq_along(res_m$y_chain), function(i) {
+Y_pred_list <- lapply(seq_along(res_m$w_chain), function(i) {
   sample_posterior_predictive(X = sim$X,
                               beta = res_m$beta_chain[[i]],
                               Sigma = res_m$sigma_chain[[i]],
@@ -83,11 +83,11 @@ W_pred_list <- lapply(seq_along(res_m$y_chain), function(i) {
                               mixed = TRUE
   )
 })
-resids <- MDres(sim$W, W_pred_list)
+resids <- MDres(sim$Y, Y_pred_list)
 summary(resids)
 
 # 7. Compare to incorrect model fit (fixed model fit to mixed data; should show some overdispersion)
-W_pred_list_ovd <- lapply(seq_along(res_f$y_chain), function(i) {
+Y_pred_list_ovd <- lapply(seq_along(res_f$w_chain), function(i) {
   sample_posterior_predictive(X = sim$X,
                               beta = res_m$beta_chain[[i]],
                               Sigma = res_m$sigma_chain[[i]],
@@ -95,12 +95,12 @@ W_pred_list_ovd <- lapply(seq_along(res_f$y_chain), function(i) {
                               mixed = FALSE
   )
 })
-resids_ovd <- MDres(sim$W, W_pred_list_ovd)
+resids_ovd <- MDres(sim$Y, Y_pred_list_ovd)
 summary(resids_ovd)
 
 # 8. Should also show that incorrect model fit has higher DIC
-ll_chain_ovd <- sapply(res_f$y_chain,
-                   function(Y) dmnl_loglik(Y, sim$W))
+ll_chain_ovd <- sapply(res_f$w_chain,
+                   function(W) dmnl_loglik(W, sim$Y))
 dic_res_ovd <- compute_dic(ll_chain_ovd, ll_hat)
 dic_res_ovd$DIC > dic_res$DIC
 ```
