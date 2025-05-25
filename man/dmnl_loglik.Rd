@@ -4,16 +4,16 @@
 \alias{dmnl_loglik}
 \title{dmnl_loglik: Multinomial Logistic-Normal Log Likelihood}
 \usage{
-dmnl_loglik(Y, W)
+dmnl_loglik(W, Y)
 }
 \arguments{
-\item{Y}{A vector or matrix (rows) of the latent log-odds for observations (d columns).}
+\item{W}{A vector or matrix (rows) of the latent log-odds for observations (J-1 columns).}
 
-\item{W}{A vector or matrix (rows) of multinomial counts (d+1 columns).}
+\item{Y}{A vector or matrix (rows) of multinomial counts (J columns).}
 }
 \value{
 The log likelihood value (numeric).
 }
 \description{
-Calculate the log likelihood for the Multinomial Logistic-Normal distribution given latent Y and counts W.
+Calculate the log likelihood for the Multinomial Logistic-Normal distribution given latent W and counts Y.
 }

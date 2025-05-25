@@ -4,10 +4,10 @@
 \alias{normbetapropdist}
 \title{normbetapropdist: Normal Approximation to Beta Proposal Distribution}
 \usage{
-normbetapropdist(WMu_vec, Sigma)
+normbetapropdist(YMu_vec, Sigma)
 }
 \arguments{
-\item{WMu_vec}{A numeric vector combining count vector w and latent means mu.}
+\item{YMu_vec}{A numeric vector combining count vector y and latent means mu.}
 
 \item{Sigma}{A covariance matrix.}
 }

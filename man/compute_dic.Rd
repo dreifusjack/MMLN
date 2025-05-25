@@ -35,7 +35,7 @@ Phi     = diag(c(0.5, 0.3)),
 PA_mean = 100)
 
 res <- MMLN(
-W       = sim$W,
+Y       = sim$Y,
 X       = sim$X,
 Z       = sim$Z,
 n_iter  = 1000,
@@ -44,12 +44,12 @@ thin    = 2,
 proposal= "normbeta",
 verbose = TRUE)
 
-ll_chain <- lapply(seq_len(length(res$y_chain)),
+ll_chain <- lapply(seq_len(length(res$w_chain)),
 function(i){
-dmnl_loglik(Y = res$y_chain[[i]], W = sim$W)})
+dmnl_loglik(Y = res$y_chain[[i]], Y = sim$Y)})
 
-Y_hat <- alr(compress_counts(sim$W)/rowSums(sim$W))
-ll_hat <- dmnl_loglik(Y = Y_hat, W = sim$W)
+W_hat <- alr(compress_counts(sim$Y)/rowSums(sim$Y))
+ll_hat <- dmnl_loglik(W = W_hat, Y = sim$Y)
 
 compute_dic(ll_chain, ll_hat)
 

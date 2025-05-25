@@ -5,7 +5,7 @@
 \title{FMLN: Fixed-effects Multinomial Logistic-Normal Gibbs Sampler}
 \usage{
 FMLN(
-  W,
+  Y,
   X,
   n_iter = 1000,
   burn_in = 0,
@@ -17,7 +17,7 @@ FMLN(
 )
 }
 \arguments{
-\item{W}{Numeric matrix (N × (d+1)) of observed multinomial counts.}
+\item{Y}{Numeric matrix (N × J) of observed multinomial counts.}
 
 \item{X}{Numeric matrix (N × p) of fixed-effects covariates.}
 
@@ -43,9 +43,9 @@ FMLN(
 \value{
 A list with components:
 \describe{
-\item{beta_chain}{List of saved β matrices (p × d) across MCMC samples.}
-\item{sigma_chain}{List of saved Sigma matrices (d × d).}
-\item{y_chain}{List of latent Y matrices (N × d).}
+\item{beta_chain}{List of saved β matrices (p × (J-1)) across MCMC samples.}
+\item{sigma_chain}{List of saved Sigma matrices ((J-1) × (J-1)).}
+\item{w_chain}{List of latent W matrices (N × (J-1)).}
 }
 }
 \description{
@@ -55,7 +55,7 @@ Estimate fixed-effects multinomial logistic-normal models via a Gibbs sampler wi
 \dontrun{
 # Fit fixed-effects MLN model
 res <- FMLN(
-  W            = count_matrix,
+  Y            = count_matrix,
   X            = design_matrix,
   n_iter       = 2000,
   burn_in      = 500,

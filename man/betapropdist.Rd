@@ -4,10 +4,10 @@
 \alias{betapropdist}
 \title{betapropdist: Beta Proposal Distribution for MCMC}
 \usage{
-betapropdist(WMu_vec, Sigma)
+betapropdist(YMu_vec, Sigma)
 }
 \arguments{
-\item{WMu_vec}{A numeric vector combining count vector w and latent means mu (length k+1 + k).}
+\item{YMu_vec}{A numeric vector combining count vector y and latent means mu (length k+1 + k).}
 
 \item{Sigma}{A covariance matrix of dimension (k+1) x (k+1).}
 }

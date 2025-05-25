@@ -5,7 +5,7 @@
 \title{MMLN: Mixed-effects Multinomial Logistic-Normal Gibbs Sampler}
 \usage{
 MMLN(
-  W,
+  Y,
   X,
   Z,
   n_iter = 1000,
@@ -18,7 +18,7 @@ MMLN(
 )
 }
 \arguments{
-\item{W}{Numeric matrix (N × (d+1)) of observed counts.}
+\item{Y}{Numeric matrix (N × J) of observed counts.}
 
 \item{X}{Numeric matrix (N × p) of fixed-effects covariates.}
 
@@ -48,11 +48,11 @@ MMLN(
 \value{
 A list with:
 \describe{
-\item{beta_chain}{List of saved fixed-effect β matrices (p × d).}
-\item{sigma_chain}{List of saved Sigma matrices (d × d).}
-\item{phi_chain}{List of saved Phi matrices (d × d) for random intercepts.}
-\item{psi_chain}{List of saved random-intercept matrices (m × d).}
-\item{y_chain}{List of latent Y matrices (N × d).}
+\item{beta_chain}{List of saved fixed-effect β matrices (p × (J-1)).}
+\item{sigma_chain}{List of saved Sigma matrices ((J-1) × (J-1)).}
+\item{phi_chain}{List of saved Phi matrices ((J-1) × (J-1)) for random intercepts.}
+\item{psi_chain}{List of saved random-intercept matrices (m × (J-1)).}
+\item{w_chain}{List of latent W matrices (N × (J-1)).}
 }
 }
 \description{
@@ -61,7 +61,7 @@ Estimate mixed-effects multinomial logistic-normal models with group-level rando
 \examples{
 \dontrun{
 res_mixed <- MMLN(
-  W              = count_matrix,
+  Y              = count_matrix,
   X              = fixed_design,
   Z              = random_design,
   n_iter         = 1500,

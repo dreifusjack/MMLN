@@ -2,7 +2,7 @@
 #'
 #' Estimate fixed-effects multinomial logistic-normal models via a Gibbs sampler with Metropolis–Hastings updates for latent variables.
 #'
-#' @param W Numeric matrix (N × (d+1)) of observed multinomial counts.
+#' @param Y Numeric matrix (N × J) of observed multinomial counts.
 #' @param X Numeric matrix (N × p) of fixed-effects covariates.
 #' @param n_iter Integer. Total number of MCMC iterations (default 1000).
 #' @param burn_in Integer. Number of initial iterations to discard (default 0).
@@ -19,16 +19,16 @@
 #'
 #' @return A list with components:
 #' \describe{
-#'   \item{beta_chain}{List of saved β matrices (p × d) across MCMC samples.}
-#'   \item{sigma_chain}{List of saved Sigma matrices (d × d).}
-#'   \item{y_chain}{List of latent Y matrices (N × d).}
+#'   \item{beta_chain}{List of saved β matrices (p × (J-1)) across MCMC samples.}
+#'   \item{sigma_chain}{List of saved Sigma matrices ((J-1) × (J-1)).}
+#'   \item{w_chain}{List of latent W matrices (N × (J-1)).}
 #' }
 #'
 #' @examples
 #' \dontrun{
 #' # Fit fixed-effects MLN model
 #' res <- FMLN(
-#'   W            = count_matrix,
+#'   Y            = count_matrix,
 #'   X            = design_matrix,
 #'   n_iter       = 2000,
 #'   burn_in      = 500,
@@ -42,12 +42,12 @@
 #' }
 #'
 #' @export
-FMLN <- function(W, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior_settings = NULL, verbose = TRUE, proposal = "normbeta") {
+FMLN <- function(Y, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior_settings = NULL, verbose = TRUE, proposal = "normbeta") {
   match.arg(proposal, c("norm", "beta", "normbeta"))
-  N <- nrow(W)
-  d <- ncol(W) - 1
+  N <- nrow(Y)
+  d <- ncol(Y) - 1
   p <- ncol(X)
-  PA <- rowSums(W)
+  PA <- rowSums(Y)
 
   if (is.null(prior_settings)) {
     prior_settings <- list(
@@ -65,49 +65,49 @@ FMLN <- function(W, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
 
   beta_chain <- vector("list", n_save)
   sigma_chain <- vector("list", n_save)
-  y_chain <- vector("list", n_save)
+  w_chain <- vector("list", n_save)
 
   warned_na_ratio <- FALSE
   if (verbose) pb <- txtProgressBar(min = 0, max = n_iter, style = 3)
   start_time <- Sys.time()
   save_idx <- 1
 
-  Y <- alr(compress_counts(W))
+  W <- alr(compress_counts(Y))
   Sigma_inv <- chol2inv(chol(Sigma))
   S_xx_inv <- chol2inv(chol(crossprod(X)))
 
   for (i in seq_len(n_iter)) {
     Mu <- tcrossprod(X, t(beta))
-    wmu <- cbind(W, Mu)
+    ymu <- cbind(Y, Mu)
 
     if (proposal == "norm") {
-      Y_new <- Y + rmvn(N, mu = rep(0, d), sigma = mh_scale * Sigma)
+      W_new <- W + rmvn(N, mu = rep(0, d), sigma = mh_scale * Sigma)
       log_q_old <- rep(0, N)
       log_q_prop <- rep(0, N)
     } else if (proposal == "beta") {
-      Pstar <- t(apply(Y, 1, ytopstar))
-      Pstar_new <- t(apply(wmu, 1, betapropdist, Sigma = mh_scale * Sigma))
-      Y_new <- t(apply(Pstar_new, 1, pstartoy))
-      wmuPstar <- cbind(wmu, Pstar)
-      wmuPstar_new <- cbind(wmu, Pstar_new)
-      log_q_old <- apply(wmuPstar, 1, betaloglike, Sigma = mh_scale * Sigma)
-      log_q_prop <- apply(wmuPstar_new, 1, betaloglike, Sigma = mh_scale * Sigma)
+      Pstar <- t(apply(W, 1, ytopstar))
+      Pstar_new <- t(apply(ymu, 1, betapropdist, Sigma = mh_scale * Sigma))
+      W_new <- t(apply(Pstar_new, 1, pstartoy))
+      ymuPstar <- cbind(ymu, Pstar)
+      ymuPstar_new <- cbind(ymu, Pstar_new)
+      log_q_old <- apply(ymuPstar, 1, betaloglike, Sigma = mh_scale * Sigma)
+      log_q_prop <- apply(ymuPstar_new, 1, betaloglike, Sigma = mh_scale * Sigma)
     } else if (proposal == "normbeta") {
-      Y_new <- t(apply(wmu, 1, normbetapropdist, Sigma = mh_scale * Sigma))
-      wmuy <- cbind(wmu, Y)
-      wmuy_new <- cbind(wmu, Y_new)
-      log_q_old <- apply(wmuy, 1, normbetaloglike, Sigma = mh_scale * Sigma)
-      log_q_prop <- apply(wmuy_new, 1, normbetaloglike, Sigma = mh_scale * Sigma)
+      W_new <- t(apply(ymu, 1, normbetapropdist, Sigma = mh_scale * Sigma))
+      ymuw <- cbind(ymu, W)
+      ymuw_new <- cbind(ymu, W_new)
+      log_q_old <- apply(ymuw, 1, normbetaloglike, Sigma = mh_scale * Sigma)
+      log_q_prop <- apply(ymuw_new, 1, normbetaloglike, Sigma = mh_scale * Sigma)
     }
 
-    Y_diff <- Y - Mu
-    Y_new_diff <- Y_new - Mu
-    newnormpart <- rowSums(tcrossprod(Y_new_diff, t(Sigma_inv)) * Y_new_diff) / 2
-    oldnormpart <- rowSums(tcrossprod(Y_diff, t(Sigma_inv)) * Y_diff) / 2
-    sexpY <- rowSums(exp(Y))
-    sexpYn <- rowSums(exp(Y_new))
-    newloglike <- rowSums(W[, 1:d] * Y_new[, 1:d]) - rowSums(W * log1p(sexpYn)) - newnormpart
-    oldloglike <- rowSums(W[, 1:d] * Y[, 1:d]) - rowSums(W * log1p(sexpY)) - oldnormpart
+    W_diff <- W - Mu
+    W_new_diff <- W_new - Mu
+    newnormpart <- rowSums(tcrossprod(W_new_diff, t(Sigma_inv)) * W_new_diff) / 2
+    oldnormpart <- rowSums(tcrossprod(W_diff, t(Sigma_inv)) * W_diff) / 2
+    sexpW <- rowSums(exp(W))
+    sexpWn <- rowSums(exp(W_new))
+    newloglike <- rowSums(Y[, 1:d] * W_new[, 1:d]) - rowSums(Y * log1p(sexpWn)) - newnormpart
+    oldloglike <- rowSums(Y[, 1:d] * W[, 1:d]) - rowSums(Y * log1p(sexpW)) - oldnormpart
 
     ratio <- newloglike - oldloglike + log_q_old - log_q_prop
     if(!warned_na_ratio && anyNA(ratio)) {
@@ -117,22 +117,22 @@ FMLN <- function(W, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
     ratio[is.na(ratio)] <- -Inf
 
     accept <- log(runif(N)) < ratio
-    Y[accept, ] <- Y_new[accept, ]
+    W[accept, ] <- W_new[accept, ]
 
-    R <- Y
+    R <- W
     beta_hat <- tcrossprod(S_xx_inv, t(crossprod(X, R)))
     post_beta_vec_cov <- kronecker(S_xx_inv, Sigma)
     post_beta_vec <- rmvn(1, as.vector(beta_hat), post_beta_vec_cov)
     beta <- matrix(post_beta_vec, nrow = p)
 
     Sigma <- chol2inv(chol(rWishart(1, df = prior_settings$nu_S + N,
-                                    Sigma = solve(prior_settings$Lambda_S + crossprod(Y - X %*% beta)))[,,1]))
+                                    Sigma = solve(prior_settings$Lambda_S + crossprod(W - X %*% beta)))[,,1]))
     Sigma_inv <- chol2inv(chol(Sigma))
 
     if (i %in% keep_iters) {
       beta_chain[[save_idx]] <- beta
       sigma_chain[[save_idx]] <- Sigma
-      y_chain[[save_idx]] <- Y
+      w_chain[[save_idx]] <- W
       save_idx <- save_idx + 1
     }
 
@@ -149,7 +149,7 @@ FMLN <- function(W, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
   list(
     beta_chain = beta_chain,
     sigma_chain = sigma_chain,
-    y_chain = y_chain
+    w_chain = w_chain
   )
 }
 
@@ -159,7 +159,7 @@ FMLN <- function(W, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
 #'
 #' Estimate mixed-effects multinomial logistic-normal models with group-level random intercepts.
 #'
-#' @param W Numeric matrix (N × (d+1)) of observed counts.
+#' @param Y Numeric matrix (N × J) of observed counts.
 #' @param X Numeric matrix (N × p) of fixed-effects covariates.
 #' @param Z Numeric matrix (N × m) of random-effects design (group indicators).
 #' @param n_iter Integer. Total MCMC iterations (default 1000).
@@ -179,17 +179,17 @@ FMLN <- function(W, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
 #'
 #' @return A list with:
 #' \describe{
-#'   \item{beta_chain}{List of saved fixed-effect β matrices (p × d).}
-#'   \item{sigma_chain}{List of saved Sigma matrices (d × d).}
-#'   \item{phi_chain}{List of saved Phi matrices (d × d) for random intercepts.}
-#'   \item{psi_chain}{List of saved random-intercept matrices (m × d).}
-#'   \item{y_chain}{List of latent Y matrices (N × d).}
+#'   \item{beta_chain}{List of saved fixed-effect β matrices (p × (J-1)).}
+#'   \item{sigma_chain}{List of saved Sigma matrices ((J-1) × (J-1)).}
+#'   \item{phi_chain}{List of saved Phi matrices ((J-1) × (J-1)) for random intercepts.}
+#'   \item{psi_chain}{List of saved random-intercept matrices (m × (J-1)).}
+#'   \item{w_chain}{List of latent W matrices (N × (J-1)).}
 #' }
 #'
 #' @examples
 #' \dontrun{
 #' res_mixed <- MMLN(
-#'   W              = count_matrix,
+#'   Y              = count_matrix,
 #'   X              = fixed_design,
 #'   Z              = random_design,
 #'   n_iter         = 1500,
@@ -203,9 +203,9 @@ FMLN <- function(W, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
 #' }
 #'
 #' @export
-MMLN <- function(W, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior_settings = NULL, verbose = TRUE, proposal = "normbeta") {
+MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior_settings = NULL, verbose = TRUE, proposal = "normbeta") {
   match.arg(proposal, c("norm", "beta", "normbeta"))
-  N <- nrow(W); d <- ncol(W) - 1; p <- ncol(X); m <- ncol(Z)
+  N <- nrow(Y); d <- ncol(Y) - 1; p <- ncol(X); m <- ncol(Z)
   if(is.null(prior_settings)) prior_settings <- list(
     beta_var = 10,
     nu_S     = d + 1, Lambda_S = diag(d),
@@ -217,10 +217,10 @@ MMLN <- function(W, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
   sigma_chain <- vector("list", n_save)
   phi_chain   <- vector("list", n_save)
   psi_chain   <- vector("list", n_save)
-  y_chain     <- vector("list", n_save)
+  w_chain     <- vector("list", n_save)
 
   # initialize
-  Y         <- alr(compress_counts(W))   # from mln_helpers.R
+  W         <- alr(compress_counts(Y))   # from mln_helpers.R
   beta      <- matrix(0, p, d)
   Sigma     <- diag(d)
   psi       <- matrix(0, m, d)
@@ -238,28 +238,28 @@ MMLN <- function(W, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
   for(it in seq_len(n_iter)) {
     # current mean
     Mu  <- X %*% beta + Z %*% psi   # N x d
-    wmu <- cbind(W, Mu)
+    ymu <- cbind(Y, Mu)
 
-    # MH update of latent Y
+    # MH update of latent W
     if(proposal == "norm") {
-      Y_prop    <- Y + mvnfast::rmvn(N, mu = rep(0, d), sigma = mh_scale * Sigma)
+      W_prop    <- W + mvnfast::rmvn(N, mu = rep(0, d), sigma = mh_scale * Sigma)
       log_q_old <- log_q_new <- rep(0, N)
     } else if(proposal == "beta") {
-      P_old     <- t(apply(Y, 1, ytopstar))
-      P_new     <- t(apply(wmu, 1, betapropdist, Sigma = mh_scale * Sigma))
-      Y_prop    <- t(apply(P_new, 1, pstartoy))
-      log_q_old <- apply(cbind(wmu, P_old), 1, betaloglike, Sigma = mh_scale * Sigma)
-      log_q_new <- apply(cbind(wmu, P_new), 1, betaloglike, Sigma = mh_scale * Sigma)
+      P_old     <- t(apply(W, 1, ytopstar))
+      P_new     <- t(apply(ymu, 1, betapropdist, Sigma = mh_scale * Sigma))
+      W_prop    <- t(apply(P_new, 1, pstartoy))
+      log_q_old <- apply(cbind(ymu, P_old), 1, betaloglike, Sigma = mh_scale * Sigma)
+      log_q_new <- apply(cbind(ymu, P_new), 1, betaloglike, Sigma = mh_scale * Sigma)
     } else {
-      Y_prop    <- t(apply(wmu, 1, normbetapropdist, Sigma = mh_scale * Sigma))
-      log_q_old <- apply(cbind(wmu, Y), 1, normbetaloglike, Sigma = mh_scale * Sigma)
-      log_q_new <- apply(cbind(wmu, Y_prop), 1, normbetaloglike, Sigma = mh_scale * Sigma)
+      W_prop    <- t(apply(ymu, 1, normbetapropdist, Sigma = mh_scale * Sigma))
+      log_q_old <- apply(cbind(ymu, W), 1, normbetaloglike, Sigma = mh_scale * Sigma)
+      log_q_new <- apply(cbind(ymu, W_prop), 1, normbetaloglike, Sigma = mh_scale * Sigma)
     }
-    expY   <- rowSums(exp(Y)); expYp <- rowSums(exp(Y_prop))
-    ll_old <- rowSums(W[,1:d] * Y[,1:d]) - rowSums(W * log1p(expY)) -
-      0.5 * rowSums((Y - Mu) %*% Sigma_inv * (Y - Mu))
-    ll_new <- rowSums(W[,1:d] * Y_prop[,1:d]) - rowSums(W * log1p(expYp)) -
-      0.5 * rowSums((Y_prop - Mu) %*% Sigma_inv * (Y_prop - Mu))
+    expW   <- rowSums(exp(W)); expWp <- rowSums(exp(W_prop))
+    ll_old <- rowSums(Y[,1:d] * W[,1:d]) - rowSums(Y * log1p(expW)) -
+      0.5 * rowSums((W - Mu) %*% Sigma_inv * (W - Mu))
+    ll_new <- rowSums(Y[,1:d] * W_prop[,1:d]) - rowSums(Y * log1p(expWp)) -
+      0.5 * rowSums((W_prop - Mu) %*% Sigma_inv * (W_prop - Mu))
     ratio  <- ll_new - ll_old + log_q_new - log_q_old
     if(!warned_na_ratio && anyNA(ratio)) {
       warning("NA detected in MH acceptance ratio; these proposals will be rejected.")
@@ -268,10 +268,10 @@ MMLN <- function(W, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
     ratio[is.na(ratio)] <- -Inf
 
     accepted <- log(runif(N)) < ratio
-    Y[accepted, ] <- Y_prop[accepted, ]
+    W[accepted, ] <- W_prop[accepted, ]
 
     # update random intercepts psi_j
-    R_tot <- Y - X %*% beta
+    R_tot <- W - X %*% beta
     for(j in seq_len(m)) {
       idx <- which(Z[, j] == 1)
       R_j <- R_tot[idx, , drop = FALSE]
@@ -287,7 +287,7 @@ MMLN <- function(W, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
                             Sigma = solve(prior_settings$Lambda_P + S_psi))[,,1])
 
     # update beta
-    R     <- Y - Z %*% psi
+    R     <- W - Z %*% psi
     beta0 <- S_xx_inv %*% (t(X) %*% R)
     cov_b <- kronecker(S_xx_inv, Sigma)
     beta  <- matrix(mvnfast::rmvn(1,
@@ -309,7 +309,7 @@ MMLN <- function(W, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
       sigma_chain[[save_i]] <- Sigma
       phi_chain[[save_i]]   <- Phi
       psi_chain[[save_i]]   <- psi
-      y_chain[[save_i]]     <- Y
+      w_chain[[save_i]]     <- W
       save_i <- save_i + 1
     }
 
@@ -329,6 +329,6 @@ MMLN <- function(W, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
     sigma_chain = sigma_chain,
     phi_chain   = phi_chain,
     psi_chain   = psi_chain,
-    y_chain     = y_chain
+    w_chain     = w_chain
   )
 }

@@ -4,10 +4,10 @@
 \alias{normbetaloglike}
 \title{normbetaloglike: Normal Approximation to Beta Log-Likelihood}
 \usage{
-normbetaloglike(WMuY_vec, Sigma)
+normbetaloglike(YMuW_vec, Sigma)
 }
 \arguments{
-\item{WMuY_vec}{A numeric vector combining counts w, means mu, and log-ratio proposals y.}
+\item{YMuW_vec}{A numeric vector combining counts y, means mu, and log-ratio proposals w.}
 
 \item{Sigma}{A covariance matrix.}
 }

@@ -13,7 +13,7 @@ simulate_mixed_mln_data(m, n_i, p, d, beta, Sigma, Phi, PA_mean = 200)
 
 \item{p}{Integer. Number of fixed-effect covariates (including intercept).}
 
-\item{d}{Integer. Number of non-baseline logits (total categories = d + 1).}
+\item{d}{Integer. Number of non-baseline logits (total categories = J = d + 1).}
 
 \item{beta}{Numeric matrix (p × d). Fixed-effect coefficient matrix.}
 
@@ -26,7 +26,7 @@ simulate_mixed_mln_data(m, n_i, p, d, beta, Sigma, Phi, PA_mean = 200)
 \value{
 A named list containing:
 \describe{
-\item{W}{N × (d+1) matrix of simulated counts.}
+\item{Y}{N × J (where J = d+1) matrix of simulated counts.}
 \item{X}{N × p design matrix for fixed effects.}
 \item{Z}{N × m design matrix for random intercepts.}
 \item{id}{Integer vector of group identifiers (length N).}

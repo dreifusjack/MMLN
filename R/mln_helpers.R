@@ -1,7 +1,7 @@
 #' compress_counts: Smithson-Verkuilen Correction
 #'
 #' This function implements the correction from Smithson and Verkuilen (2006) to handle zero counts. Input is a vector or matrix of multinomial counts to be compressed row-wise
-#' @param w A vector or matrix (rows) of multinomial counts, to be compressed in the presence of zero counts
+#' @param y A vector or matrix (rows) of multinomial counts, to be compressed in the presence of zero counts
 #'
 #' @return A vector or matrix (rows) of compressed multinomial counts
 #'
@@ -16,20 +16,20 @@
 #'
 #' @export
 #'
-compress_counts <- function(w) {
-  if (is.matrix(w)) {
-    zero_rows <- apply(w == 0, 1, any)
-    rs <- rowSums(w[zero_rows, , drop=FALSE])
-    K <- ncol(w)
-    w_new <- w
-    w_new[zero_rows, ] <- ((w[zero_rows, , drop=FALSE] * (rs - 1)) + 1/K) / rs
-    return(w_new)
+compress_counts <- function(y) {
+  if (is.matrix(y)) {
+    zero_rows <- apply(y == 0, 1, any)
+    rs <- rowSums(y[zero_rows, , drop=FALSE])
+    K <- ncol(y)
+    y_new <- y
+    y_new[zero_rows, ] <- ((y[zero_rows, , drop=FALSE] * (rs - 1)) + 1/K) / rs
+    return(y_new)
   } else {
-    if (any(w == 0)) {
-      N <- sum(w); K <- length(w)
-      return((w * (N - 1) + 1/K) / N)
+    if (any(y == 0)) {
+      N <- sum(y); K <- length(y)
+      return((y * (N - 1) + 1/K) / N)
     } else {
-      return(w)
+      return(y)
     }
   }
 }
@@ -58,7 +58,7 @@ alr <- function(P) {
 #'
 #' Transform log-odds back to a probability vector or matrix using inverse additive log ratio, treating the last category as baseline.
 #'
-#' @param Y A vector or matrix (rows) of log-odds values.
+#' @param W A vector or matrix (rows) of log-odds values.
 #'
 #' @return A vector or matrix (rows) of probabilities summing to one.
 #'
@@ -68,28 +68,28 @@ alr <- function(P) {
 #' }
 #'
 #' @export
-alr_inv <- function(Y) {
-  if(!is.matrix(Y)) Y <- matrix(Y, nrow=1)
-  expY <- exp(Y)
-  den <- rowSums(expY) + 1
-  cbind(expY/den, 1/den)
+alr_inv <- function(W) {
+  if(!is.matrix(W)) W <- matrix(W, nrow=1)
+  expW <- exp(W)
+  den <- rowSums(expW) + 1
+  cbind(expW/den, 1/den)
 }
 
 #' dmnl_loglik: Multinomial Logistic-Normal Log Likelihood
 #'
-#' Calculate the log likelihood for the Multinomial Logistic-Normal distribution given latent Y and counts W.
+#' Calculate the log likelihood for the Multinomial Logistic-Normal distribution given latent W and counts Y.
 #'
-#' @param Y A vector or matrix (rows) of the latent log-odds for observations (d columns).
-#' @param W A vector or matrix (rows) of multinomial counts (d+1 columns).
+#' @param W A vector or matrix (rows) of the latent log-odds for observations (J-1 columns).
+#' @param Y A vector or matrix (rows) of multinomial counts (J columns).
 #'
 #' @return The log likelihood value (numeric).
 #'
 #' @export
-dmnl_loglik <- function(Y, W) {
-  if(!is.matrix(Y)) Y <- matrix(Y, nrow=1)
-  if(!is.matrix(W)) W <- matrix(W, nrow=nrow(Y), byrow=TRUE)
-  P <- alr_inv(Y)
-  sum(W * log(P))
+dmnl_loglik <- function(W, Y) {
+  if(!is.matrix(W)) W <- matrix(W, nrow=1)
+  if(!is.matrix(Y)) Y <- matrix(Y, nrow=nrow(Y), byrow=TRUE)
+  P <- alr_inv(W)
+  sum(Y * log(P))
 }
 
 # Metropolis-Hastings proposal helpers
@@ -133,7 +133,7 @@ ytopstar <- function(yvec) {
 #'
 #' Draw proposal samples for a multinomial logistic-normal model using a Beta distribution.
 #'
-#' @param WMu_vec A numeric vector combining count vector w and latent means mu (length k+1 + k).
+#' @param YMu_vec A numeric vector combining count vector y and latent means mu (length k+1 + k).
 #' @param Sigma A covariance matrix of dimension (k+1) x (k+1).
 #'
 #' @return A numeric vector of length k containing Beta proposal samples.
@@ -144,16 +144,16 @@ ytopstar <- function(yvec) {
 #' }
 #'
 #' @export
-betapropdist <- function(WMu_vec, Sigma) {
+betapropdist <- function(YMu_vec, Sigma) {
   k <- ncol(Sigma)
-  w_vec <- WMu_vec[1:(k+1)]
-  mu_vec <- WMu_vec[(k+2):length(WMu_vec)]
+  y_vec <- YMu_vec[1:(k+1)]
+  mu_vec <- YMu_vec[(k+2):length(YMu_vec)]
   exp_mu <- exp(mu_vec)
   denom <- diag(Sigma)
   alpha <- pmax((1 + exp_mu) / denom - exp_mu / (1 + exp_mu), 1e-3)
   beta <- alpha * exp(-mu_vec)
-  alpha_star <- w_vec[1:k] + alpha
-  beta_star <- w_vec[k+1] + beta
+  alpha_star <- y_vec[1:k] + alpha
+  beta_star <- y_vec[k+1] + beta
   rbeta(k, alpha_star, beta_star)
 }
 
@@ -161,7 +161,7 @@ betapropdist <- function(WMu_vec, Sigma) {
 #'
 #' Compute the log-likelihood of Beta proposal samples including the Jacobian adjustment term.
 #'
-#' @param WMuPstar_vec A numeric vector combining counts w, means mu, and proposal pstar values.
+#' @param YMuPstar_vec A numeric vector combining counts y, means mu, and proposal pstar values.
 #' @param Sigma A covariance matrix.
 #'
 #' @return A numeric scalar of the log-likelihood.
@@ -172,17 +172,17 @@ betapropdist <- function(WMu_vec, Sigma) {
 #' }
 #'
 #' @export
-betaloglike <- function(WMuPstar_vec, Sigma) {
+betaloglike <- function(YMuPstar_vec, Sigma) {
   k <- ncol(Sigma)
-  w_vec <- WMuPstar_vec[1:(k+1)]
-  mu_vec <- WMuPstar_vec[(k+2):(2*k+1)]
-  pstar_vec <- WMuPstar_vec[(2*k+2):length(WMuPstar_vec)]
+  y_vec <- YMuPstar_vec[1:(k+1)]
+  mu_vec <- YMuPstar_vec[(k+2):(2*k+1)]
+  pstar_vec <- YMuPstar_vec[(2*k+2):length(YMuPstar_vec)]
   exp_mu <- exp(mu_vec)
   denom <- diag(Sigma)
   alpha <- pmax((1 + exp_mu) / denom - exp_mu / (1 + exp_mu), 1e-3)
   beta <- alpha * exp(-mu_vec)
-  alpha_star <- w_vec[1:k] + alpha
-  beta_star <- w_vec[k+1] + beta
+  alpha_star <- y_vec[1:k] + alpha
+  beta_star <- y_vec[k+1] + beta
   loglike <- dbeta(pstar_vec, alpha_star, beta_star, log = TRUE)
   logjac <- log(pstar_vec) + log(1 - pstar_vec)
   sum(loglike + logjac)
@@ -192,7 +192,7 @@ betaloglike <- function(WMuPstar_vec, Sigma) {
 #'
 #' Draw proposal samples for the Beta proposal distribution using a Normal approximation via digamma and trigamma.
 #'
-#' @param WMu_vec A numeric vector combining count vector w and latent means mu.
+#' @param YMu_vec A numeric vector combining count vector y and latent means mu.
 #' @param Sigma A covariance matrix.
 #'
 #' @return A numeric vector of length k containing normally-approximated proposal samples.
@@ -203,16 +203,16 @@ betaloglike <- function(WMuPstar_vec, Sigma) {
 #' }
 #'
 #' @export
-normbetapropdist <- function(WMu_vec, Sigma) {
+normbetapropdist <- function(YMu_vec, Sigma) {
   k <- ncol(Sigma)
-  w_vec <- WMu_vec[1:(k+1)]
-  mu_vec <- WMu_vec[(k+2):length(WMu_vec)]
+  y_vec <- YMu_vec[1:(k+1)]
+  mu_vec <- YMu_vec[(k+2):length(YMu_vec)]
   result <- numeric(length = k)
   for (i in 1:k) {
     alpha <- ((1 + exp(mu_vec[i])) / Sigma[i, i]) - (exp(mu_vec[i]) / (1 + exp(mu_vec[i])))
     beta <- alpha * exp(-mu_vec[i])
-    alpha_star <- w_vec[i] + alpha
-    beta_star <- w_vec[k + 1] + beta
+    alpha_star <- y_vec[i] + alpha
+    beta_star <- y_vec[k + 1] + beta
     muprop <- digamma(alpha_star) - digamma(beta_star)
     sigprop <- sqrt(trigamma(alpha_star) + trigamma(beta_star))
     result[i] <- rnorm(1, muprop, sigprop)
@@ -224,7 +224,7 @@ normbetapropdist <- function(WMu_vec, Sigma) {
 #'
 #' Compute the log-likelihood under the Normal approximation of the Beta proposal distribution.
 #'
-#' @param WMuY_vec A numeric vector combining counts w, means mu, and log-ratio proposals y.
+#' @param YMuW_vec A numeric vector combining counts y, means mu, and log-ratio proposals w.
 #' @param Sigma A covariance matrix.
 #'
 #' @return A numeric scalar of the log-likelihood.
@@ -235,20 +235,20 @@ normbetapropdist <- function(WMu_vec, Sigma) {
 #' }
 #'
 #' @export
-normbetaloglike <- function(WMuY_vec, Sigma) {
+normbetaloglike <- function(YMuW_vec, Sigma) {
   k <- ncol(Sigma)
-  w_vec <- WMuY_vec[1:(k+1)]
-  mu_vec <- WMuY_vec[(k+2):(2*k+1)]
-  y_vec <- WMuY_vec[(2*k+2):length(WMuY_vec)]
+  y_vec <- YMuW_vec[1:(k+1)]
+  mu_vec <- YMuW_vec[(k+2):(2*k+1)]
+  w_vec <- YMuW_vec[(2*k+2):length(YMuW_vec)]
   result <- 0
   for (i in 1:k) {
     alpha <- ((1 + exp(mu_vec[i])) / Sigma[i, i]) - (exp(mu_vec[i]) / (1 + exp(mu_vec[i])))
     beta <- alpha * exp(-mu_vec[i])
-    alpha_star <- w_vec[i] + alpha
-    beta_star <- w_vec[k + 1] + beta
+    alpha_star <- y_vec[i] + alpha
+    beta_star <- y_vec[k + 1] + beta
     muprop <- digamma(alpha_star) - digamma(beta_star)
     sigprop <- sqrt(trigamma(alpha_star) + trigamma(beta_star))
-    result <- result + dnorm(y_vec[i], muprop, sigprop, log = TRUE)
+    result <- result + dnorm(w_vec[i], muprop, sigprop, log = TRUE)
   }
   result
 }
@@ -261,7 +261,7 @@ normbetaloglike <- function(WMuY_vec, Sigma) {
 #' @param m Integer. Number of groups.
 #' @param n_i Integer scalar or vector. Number of observations per group; if scalar, recycled across groups.
 #' @param p Integer. Number of fixed-effect covariates (including intercept).
-#' @param d Integer. Number of non-baseline logits (total categories = d + 1).
+#' @param d Integer. Number of non-baseline logits (total categories = J = d + 1).
 #' @param beta Numeric matrix (p × d). Fixed-effect coefficient matrix.
 #' @param Sigma Numeric matrix (d × d). Covariance matrix for within-group latent errors.
 #' @param Phi Numeric matrix (d × d). Covariance matrix for group-level random intercepts.
@@ -269,7 +269,7 @@ normbetaloglike <- function(WMuY_vec, Sigma) {
 #'
 #' @return A named list containing:
 #' \describe{
-#'   \item{W}{N × (d+1) matrix of simulated counts.}
+#'   \item{Y}{N × J (where J = d+1) matrix of simulated counts.}
 #'   \item{X}{N × p design matrix for fixed effects.}
 #'   \item{Z}{N × m design matrix for random intercepts.}
 #'   \item{id}{Integer vector of group identifiers (length N).}
@@ -314,16 +314,16 @@ simulate_mixed_mln_data <- function(
   Z <- model.matrix(~ factor(id) - 1)
   psi_mat <- mvnfast::rmvn(m, mu = rep(0, d), sigma = Phi)
   PA <- round(rpois(N, PA_mean))
-  W <- matrix(NA, nrow = N, ncol = d + 1)
+  Y <- matrix(NA, nrow = N, ncol = d + 1)
   for (j in seq_len(N)) {
     eps <- mvnfast::rmvn(1, mu = rep(0, d), sigma = Sigma)
-    y_j <- X[j, , drop = FALSE] %*% beta + eps + psi_mat[id[j], ]
-    exp_y <- exp(y_j)
-    probs <- c(exp_y / (1 + sum(exp_y)), 1 / (1 + sum(exp_y)))
-    W[j, ] <- as.vector(rmultinom(1, size = PA[j], prob = probs))
+    w_j <- X[j, , drop = FALSE] %*% beta + eps + psi_mat[id[j], ]
+    exp_w <- exp(w_j)
+    probs <- c(exp_w / (1 + sum(exp_w)), 1 / (1 + sum(exp_w)))
+    Y[j, ] <- as.vector(rmultinom(1, size = PA[j], prob = probs))
   }
   list(
-    W = W,
+    Y = Y,
     X = X,
     Z = Z,
     id = id,

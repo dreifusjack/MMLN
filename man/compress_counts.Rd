@@ -4,10 +4,10 @@
 \alias{compress_counts}
 \title{compress_counts: Smithson-Verkuilen Correction}
 \usage{
-compress_counts(w)
+compress_counts(y)
 }
 \arguments{
-\item{w}{A vector or matrix (rows) of multinomial counts, to be compressed in the presence of zero counts}
+\item{y}{A vector or matrix (rows) of multinomial counts, to be compressed in the presence of zero counts}
 }
 \value{
 A vector or matrix (rows) of compressed multinomial counts

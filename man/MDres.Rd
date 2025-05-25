@@ -4,12 +4,12 @@
 \alias{MDres}
 \title{MDres: Mahalanobis residuals for predictive checks}
 \usage{
-MDres(W, W_pred_list)
+MDres(Y, Y_pred_list)
 }
 \arguments{
-\item{W}{Numeric matrix (N by (d+1)) of observed counts.}
+\item{Y}{Numeric matrix (N by J) of observed counts.}
 
-\item{W_pred_list}{A list of P numeric matrices (each N by (d+1)) of posterior predictive counts.}
+\item{Y_pred_list}{A list of P numeric matrices (each N by J) of posterior predictive counts.}
 }
 \value{
 Numeric vector of length N of residuals (class 'mdres').
@@ -19,7 +19,7 @@ Compute quantile-normalized Mahalanobis residuals comparing observed counts to p
 }
 \examples{
 \dontrun{
-resids <- MDres(W_obs, W_pred_list)
+resids <- MDres(Y_obs, Y_pred_list)
 summary(resids)
 }
 

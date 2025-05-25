@@ -102,7 +102,7 @@ plot_trace_and_summary <- function(chain_array, param_name = "param", max_rows =
 #' PA_mean = 100)
 #'
 #' res <- MMLN(
-#' W       = sim$W,
+#' Y       = sim$Y,
 #' X       = sim$X,
 #' Z       = sim$Z,
 #' n_iter  = 1000,
@@ -111,12 +111,12 @@ plot_trace_and_summary <- function(chain_array, param_name = "param", max_rows =
 #' proposal= "normbeta",
 #' verbose = TRUE)
 #'
-#' ll_chain <- lapply(seq_len(length(res$y_chain)),
+#' ll_chain <- lapply(seq_len(length(res$w_chain)),
 #' function(i){
-#' dmnl_loglik(Y = res$y_chain[[i]], W = sim$W)})
+#' dmnl_loglik(Y = res$y_chain[[i]], Y = sim$Y)})
 #'
-#' Y_hat <- alr(compress_counts(sim$W)/rowSums(sim$W))
-#' ll_hat <- dmnl_loglik(Y = Y_hat, W = sim$W)
+#' W_hat <- alr(compress_counts(sim$Y)/rowSums(sim$Y))
+#' ll_hat <- dmnl_loglik(W = W_hat, Y = sim$Y)
 #'
 #' compute_dic(ll_chain, ll_hat)
 #'
@@ -140,14 +140,14 @@ compute_dic <- function(loglik_chain, loglik_hat) {
 #' Generate posterior predictive multinomial counts from a fitted (mixed/fixed effects) MLN model.
 #'
 #' @param X Numeric matrix (N by p) of fixed-effects design.
-#' @param beta Numeric matrix (p by d) of fixed-effects coefficients.
-#' @param Sigma Numeric (d by d) covariance matrix of latent variables.
+#' @param beta Numeric matrix (p by (J-1)) of fixed-effects coefficients.
+#' @param Sigma Numeric ((J-1) by (J-1)) covariance matrix of latent variables.
 #' @param PA Numeric vector or scalar for total counts per observation (length N or 1).
 #' @param Z Optional numeric matrix (N by q) of random-effects design (required if mixed = TRUE).
-#' @param psi Optional numeric matrix (q by d) of random-effects coefficients (required if mixed = TRUE).
+#' @param psi Optional numeric matrix (q by (J-1)) of random-effects coefficients (required if mixed = TRUE).
 #' @param mixed Logical; include random effects when TRUE (default TRUE).
 #'
-#' @return Numeric matrix (N by (d+1)) of simulated counts for each category.
+#' @return Numeric matrix (N by J) of simulated counts for each category.
 #'
 #' @examples
 #' \dontrun{
@@ -168,16 +168,16 @@ sample_posterior_predictive <- function(X, beta, Sigma, PA,
     mu <- mu + Z %*% psi
   }
   # simulate latent alr-scale outcomes
-  Y_hat <- mu + mvnfast::rmvn(N, mu = rep(0, d), sigma = Sigma)
+  W_hat <- mu + mvnfast::rmvn(N, mu = rep(0, d), sigma = Sigma)
   # transform back to simplex
-  P_hat <- alr_inv(Y_hat)
+  P_hat <- alr_inv(W_hat)
   # sample counts per observation
-  W <- matrix(NA, nrow = N, ncol = d + 1)
+  Y <- matrix(NA, nrow = N, ncol = d + 1)
   for(i in seq_len(N)) {
     size_i <- if(length(PA) > 1) PA[i] else PA
-    W[i, ] <- rmultinom(1, size = size_i, prob = P_hat[i, ])
+    Y[i, ] <- rmultinom(1, size = size_i, prob = P_hat[i, ])
   }
-  W
+  Y
 }
 
 
@@ -191,30 +191,30 @@ sample_posterior_predictive <- function(X, beta, Sigma, PA,
 #'
 #' Compute quantile-normalized Mahalanobis residuals comparing observed counts to posterior predictive samples.
 #'
-#' @param W Numeric matrix (N by (d+1)) of observed counts.
-#' @param W_pred_list A list of P numeric matrices (each N by (d+1)) of posterior predictive counts.
+#' @param Y Numeric matrix (N by J) of observed counts.
+#' @param Y_pred_list A list of P numeric matrices (each N by J) of posterior predictive counts.
 #'
 #' @return Numeric vector of length N of residuals (class 'mdres').
 #'
 #' @examples
 #' \dontrun{
-#' resids <- MDres(W_obs, W_pred_list)
+#' resids <- MDres(Y_obs, Y_pred_list)
 #' summary(resids)
 #' }
 #'
 #' @export
-MDres <- function(W, W_pred_list) {
+MDres <- function(Y, Y_pred_list) {
 
-  W_obs <- compress_counts(W)
-  alr_obs <- alr(W_obs)
+  Y_obs <- compress_counts(Y)
+  alr_obs <- alr(Y_obs)
 
-  N <- nrow(W_obs)
-  d <- ncol(W_obs) - 1
-  P <- length(W_pred_list)
+  N <- nrow(Y_obs)
+  d <- ncol(Y_obs) - 1
+  P <- length(Y_pred_list)
 
   pred_array <- array(NA, dim = c(N, d, P))
   for (j in seq_len(P)) {
-    pred_array[,,j] <- alr(compress_counts(W_pred_list[[j]]))
+    pred_array[,,j] <- alr(compress_counts(Y_pred_list[[j]]))
   }
 
   mu_all <- apply(pred_array, 1:2, mean)
@@ -232,8 +232,8 @@ MDres <- function(W, W_pred_list) {
       flush.console()
     }
     pred_i <- t(pred_array[i,,])
-    y_obs_i <- alr_obs[i, ]
-    obsi <- rbind(y_obs_i, pred_i)
+    w_obs_i <- alr_obs[i, ]
+    obsi <- rbind(w_obs_i, pred_i)
     mds_list[[i]] <- apply(obsi, 1, mahalanobis, center = mu_all[i,], cov = Sigma_all[[i]])
   }
 

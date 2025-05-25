@@ -17,20 +17,20 @@ sample_posterior_predictive(
 \arguments{
 \item{X}{Numeric matrix (N by p) of fixed-effects design.}
 
-\item{beta}{Numeric matrix (p by d) of fixed-effects coefficients.}
+\item{beta}{Numeric matrix (p by (J-1)) of fixed-effects coefficients.}
 
-\item{Sigma}{Numeric (d by d) covariance matrix of latent variables.}
+\item{Sigma}{Numeric ((J-1) by (J-1)) covariance matrix of latent variables.}
 
 \item{PA}{Numeric vector or scalar for total counts per observation (length N or 1).}
 
 \item{Z}{Optional numeric matrix (N by q) of random-effects design (required if mixed = TRUE).}
 
-\item{psi}{Optional numeric matrix (q by d) of random-effects coefficients (required if mixed = TRUE).}
+\item{psi}{Optional numeric matrix (q by (J-1)) of random-effects coefficients (required if mixed = TRUE).}
 
 \item{mixed}{Logical; include random effects when TRUE (default TRUE).}
 }
 \value{
-Numeric matrix (N by (d+1)) of simulated counts for each category.
+Numeric matrix (N by J) of simulated counts for each category.
 }
 \description{
 Generate posterior predictive multinomial counts from a fitted (mixed/fixed effects) MLN model.

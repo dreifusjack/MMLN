@@ -4,10 +4,10 @@
 \alias{alr_inv}
 \title{alr_inv: Inverse Additive Log Ratio}
 \usage{
-alr_inv(Y)
+alr_inv(W)
 }
 \arguments{
-\item{Y}{A vector or matrix (rows) of log-odds values.}
+\item{W}{A vector or matrix (rows) of log-odds values.}
 }
 \value{
 A vector or matrix (rows) of probabilities summing to one.

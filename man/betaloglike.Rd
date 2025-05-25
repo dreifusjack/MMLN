@@ -4,10 +4,10 @@
 \alias{betaloglike}
 \title{betaloglike: Beta Log-Likelihood with Jacobian Correction}
 \usage{
-betaloglike(WMuPstar_vec, Sigma)
+betaloglike(YMuPstar_vec, Sigma)
 }
 \arguments{
-\item{WMuPstar_vec}{A numeric vector combining counts w, means mu, and proposal pstar values.}
+\item{YMuPstar_vec}{A numeric vector combining counts y, means mu, and proposal pstar values.}
 
 \item{Sigma}{A covariance matrix.}
 }
