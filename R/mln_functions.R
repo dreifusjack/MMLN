@@ -154,6 +154,10 @@ FMLN <- function(Y, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
 }
 
 
+## To Do: Update below function to allow for any number of random effects
+## Currently: Z can only be N x m, which means you can only have random intercepts (one for each of m groups)
+## To Update: Z needs to be able to be N x (m x q) where each group has q random covariates
+## The math for this is established in the Gerber \& Craig (2021) paper, but still needs to be implemented here
 
 #' MMLN: Mixed-effects Multinomial Logistic-Normal Gibbs Sampler
 #'

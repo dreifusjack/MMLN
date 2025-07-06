@@ -121,7 +121,7 @@ It then draws replicates from the fitted model distributions and computes Mahala
 # install real-data dependencies (if needed)
 install.packages(c("MM", "MGLM"))
 
-# load your package
+# load package
 library(MMLN)
 
 # run the pollen data example
