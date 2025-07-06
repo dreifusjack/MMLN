@@ -105,3 +105,36 @@ dic_res_ovd <- compute_dic(ll_chain_ovd, ll_hat)
 dic_res_ovd$DIC > dic_res$DIC
 ```
 
+## Real-Data Example: Pollen Data
+
+This package includes a helper, `run_pollen_models()`, that reproduces the Gerber \& Craig (2024) pollen analysis by fitting three models to the **pollen** counts (from the **MM** package):
+
+1. **Multinomial logit** via `MGLMreg(dist = "MN")`  
+2. **Dirichlet multinomial** via `MGLMreg(dist = "DM")`  
+3. **Fixed-effects MLN** via `FMLN()`
+
+It then draws replicates from the fitted model distributions and computes Mahalanobis‐residuals for each fit.
+
+### Usage
+
+```r
+# install real-data dependencies (if needed)
+install.packages(c("MM", "MGLM"))
+
+# load your package
+library(MMLN)
+
+# run the pollen data example
+pollen_res <- run_pollen_models(
+  n_iter   = 1000,    # total MLN iterations
+  burn_in  = 400,     # MLN burn-in
+  thin     = 2,       # MLN thinning
+  proposal = "normbeta",
+  P        = 500      # number of posterior predictive replicates
+)
+
+# inspect KS-tests and QQ-plots of Mahalanobis residuals
+summary(pollen_res$resids_mlr)
+summary(pollen_res$resids_dm)
+summary(pollen_res$resids_mln)
+```
