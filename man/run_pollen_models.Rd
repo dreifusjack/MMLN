@@ -29,9 +29,9 @@ A list with components:
 \item{fit_mlr}{The \code{MGLMreg} object for the multinomial logit fit.}
 \item{fit_dm}{The \code{MGLMreg} object for the Dirichlet‐multinomial fit.}
 \item{fit_mln}{The list returned by \code{FMLN()} for the fixed‐effects MLN fit.}
-\item{Y_pred_mlr}{List of length P of \(N\times J\) count matrices sampled from the MN model.}
-\item{Y_pred_dm}{List of length P of \(N\times J\) count matrices sampled from the DM model.}
-\item{Y_pred_mln}{List of length P of \(N\times J\) count matrices sampled from the MLN model (using posterior‐mean parameters).}
+\item{Y_pred_mlr}{List of length P of \eqn{N \times J} count matrices sampled from the MN model.}
+\item{Y_pred_dm}{List of length P of \eqn{N \times J} count matrices sampled from the DM model.}
+\item{Y_pred_mln}{List of length P of \eqn{N \times J} count matrices sampled from the MLN model (using posterior‐mean parameters).}
 \item{resids_mlr}{Mahalanobis residuals (\code{mdres}) for the multinomial logit model.}
 \item{resids_dm}{Mahalanobis residuals (\code{mdres}) for the Dirichlet‐multinomial model.}
 \item{resids_mln}{Mahalanobis residuals (\code{mdres}) for the MLN model.}
