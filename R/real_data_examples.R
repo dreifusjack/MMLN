@@ -126,11 +126,11 @@ run_pollen_models <- function(n_iter   = 1000,
   message("▶ Computing MDRes for multinomial‐logit model")
   resids_mlr <- MDres(Y, Y_pred_mlr)
 
-  cat("Done: \n")  # ensure we start on a fresh line
+  cat("\nDone: \n")  # ensure we start on a fresh line
   message("▶ Computing MDRes for Dirichlet-multinomial model")
   resids_dm  <- MDres(Y, Y_pred_dm)
 
-  cat("Done: \n")  # ensure we start on a fresh line
+  cat("\nDone: \n")  # ensure we start on a fresh line
   message("▶ Computing MDRes for multinomial‐logistic-normal model")
   resids_mln <- MDres(Y, Y_pred_mln)
 

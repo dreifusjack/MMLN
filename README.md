@@ -134,6 +134,8 @@ pollen_res <- run_pollen_models(
 )
 
 # inspect KS-tests and QQ-plots of Mahalanobis residuals
+# should show the well established (Mosimann, 1962) result that there is overdispersion
+# DM and MLN should fit better than MLR
 summary(pollen_res$resids_mlr)
 summary(pollen_res$resids_dm)
 summary(pollen_res$resids_mln)
