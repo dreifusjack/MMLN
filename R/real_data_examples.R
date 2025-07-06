@@ -149,3 +149,5 @@ run_pollen_models <- function(n_iter   = 1000,
 
   return(output)
 }
+
+## To Do: Add baseball and bird examples from Gerber \& Craig (2024)
