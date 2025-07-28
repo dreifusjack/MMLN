@@ -32,7 +32,7 @@ sim <- simulate_mixed_mln_data(
   beta    = matrix(c(0.5, -1, 0.2, 0.3, 0.7, -0.4), 3, 2),
   Sigma   = diag(2),
   Phi     = diag(2),
-  PA_mean = 200
+  n_mean = 200
 )
 
 # 2. Fit a fixed-effects MLN model
@@ -77,7 +77,7 @@ Y_pred_list <- lapply(seq_along(res_m$w_chain), function(i) {
   sample_posterior_predictive(X = sim$X,
                               beta = res_m$beta_chain[[i]],
                               Sigma = res_m$sigma_chain[[i]],
-                              PA = sim$PA,
+                              n = sim$n,
                               Z = sim$Z,
                               psi = res_m$psi_chain[[i]],
                               mixed = TRUE
@@ -91,7 +91,7 @@ Y_pred_list_ovd <- lapply(seq_along(res_f$w_chain), function(i) {
   sample_posterior_predictive(X = sim$X,
                               beta = res_m$beta_chain[[i]],
                               Sigma = res_m$sigma_chain[[i]],
-                              PA = sim$PA,
+                              n = sim$n,
                               mixed = FALSE
   )
 })
