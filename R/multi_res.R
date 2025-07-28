@@ -19,7 +19,7 @@
 #' beta    = matrix(c(-2, 0.5, 1, -0.), nrow = 2, ncol = 2),
 #' Sigma   = diag(c(1.2, .7)),
 #' Phi     = diag(c(0.5, 0.3)),
-#' PA_mean = 100)
+#' n_mean = 100)
 #'
 #' res <- MMLN(
 #' W       = sim$W,
@@ -99,7 +99,7 @@ plot_trace_and_summary <- function(chain_array, param_name = "param", max_rows =
 #' beta    = matrix(c(-2, 0.5, 1, -0.), nrow = 2, ncol = 2),
 #' Sigma   = diag(c(1.2, .7)),
 #' Phi     = diag(c(0.5, 0.3)),
-#' PA_mean = 100)
+#' n_mean = 100)
 #'
 #' res <- MMLN(
 #' Y       = sim$Y,
@@ -142,7 +142,7 @@ compute_dic <- function(loglik_chain, loglik_hat) {
 #' @param X Numeric matrix (N by p) of fixed-effects design.
 #' @param beta Numeric matrix (p by (J-1)) of fixed-effects coefficients.
 #' @param Sigma Numeric ((J-1) by (J-1)) covariance matrix of latent variables.
-#' @param PA Numeric vector or scalar for total counts per observation (length N or 1).
+#' @param n Numeric vector or scalar for total counts per observation (length N or 1).
 #' @param Z Optional numeric matrix (N by q) of random-effects design (required if mixed = TRUE).
 #' @param psi Optional numeric matrix (q by (J-1)) of random-effects coefficients (required if mixed = TRUE).
 #' @param mixed Logical; include random effects when TRUE (default TRUE).
@@ -151,12 +151,12 @@ compute_dic <- function(loglik_chain, loglik_hat) {
 #'
 #' @examples
 #' \dontrun{
-#' sim_counts <- sample_posterior_predictive(X, beta, Sigma, PA,
+#' sim_counts <- sample_posterior_predictive(X, beta, Sigma, n,
 #'                                           Z = Z, psi = psi, mixed = TRUE)
 #' }
 #'
 #' @export
-sample_posterior_predictive <- function(X, beta, Sigma, PA,
+sample_posterior_predictive <- function(X, beta, Sigma, n,
                                         Z = NULL, psi = NULL,
                                         mixed = TRUE) {
   N <- nrow(X)
@@ -174,7 +174,7 @@ sample_posterior_predictive <- function(X, beta, Sigma, PA,
   # sample counts per observation
   Y <- matrix(NA, nrow = N, ncol = d + 1)
   for(i in seq_len(N)) {
-    size_i <- if(length(PA) > 1) PA[i] else PA
+    size_i <- if(length(n) > 1) n[i] else n
     Y[i, ] <- rmultinom(1, size = size_i, prob = P_hat[i, ])
   }
   Y

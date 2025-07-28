@@ -8,7 +8,7 @@ sample_posterior_predictive(
   X,
   beta,
   Sigma,
-  PA,
+  n,
   Z = NULL,
   psi = NULL,
   mixed = TRUE
@@ -21,7 +21,7 @@ sample_posterior_predictive(
 
 \item{Sigma}{Numeric ((J-1) by (J-1)) covariance matrix of latent variables.}
 
-\item{PA}{Numeric vector or scalar for total counts per observation (length N or 1).}
+\item{n}{Numeric vector or scalar for total counts per observation (length N or 1).}
 
 \item{Z}{Optional numeric matrix (N by q) of random-effects design (required if mixed = TRUE).}
 
@@ -37,7 +37,7 @@ Generate posterior predictive multinomial counts from a fitted (mixed/fixed effe
 }
 \examples{
 \dontrun{
-sim_counts <- sample_posterior_predictive(X, beta, Sigma, PA,
+sim_counts <- sample_posterior_predictive(X, beta, Sigma, n,
                                           Z = Z, psi = psi, mixed = TRUE)
 }
 

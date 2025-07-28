@@ -1,8 +1,8 @@
-#' Real‐Data Example: Pollen Data – MN, DM & MLN Models
+#' Real-Data Example: Pollen Data - MN, DM & MLN Models
 #'
-#' This function reproduces the pollen‐data example from Gerber & Craig, fitting three
-#' models to the “pollen” counts (multinomial logit, Dirichlet‐multinomial, and
-#' multinomial-logistic‐normal), drawing replicate from fitted sampling distributions, and computing
+#' This function reproduces the pollen-data example from Gerber & Craig, fitting three
+#' models to the "pollen" counts (multinomial logit, Dirichlet-multinomial, and
+#' multinomial-logistic-normal), drawing replicate from fitted sampling distributions, and computing
 #' Mahalanobis residuals for each model.
 #'
 #' @param n_iter   Integer; total number of MCMC iterations for the MLN model (default 1000)
@@ -14,13 +14,13 @@
 #' @return A list with components:
 #' \describe{
 #'   \item{fit_mlr}{The `MGLMreg` object for the multinomial logit fit.}
-#'   \item{fit_dm}{The `MGLMreg` object for the Dirichlet‐multinomial fit.}
-#'   \item{fit_mln}{The list returned by `FMLN()` for the fixed‐effects MLN fit.}
+#'   \item{fit_dm}{The `MGLMreg` object for the Dirichlet-multinomial fit.}
+#'   \item{fit_mln}{The list returned by `FMLN()` for the fixed-effects MLN fit.}
 #'   \item{Y_pred_mlr}{List of length P of \eqn{N \times J} count matrices sampled from the MN model.}
 #'   \item{Y_pred_dm}{List of length P of \eqn{N \times J} count matrices sampled from the DM model.}
-#'   \item{Y_pred_mln}{List of length P of \eqn{N \times J} count matrices sampled from the MLN model (using posterior‐mean parameters).}
+#'   \item{Y_pred_mln}{List of length P of \eqn{N \times J} count matrices sampled from the MLN model (using posterior-mean parameters).}
 #'   \item{resids_mlr}{Mahalanobis residuals (`mdres`) for the multinomial logit model.}
-#'   \item{resids_dm}{Mahalanobis residuals (`mdres`) for the Dirichlet‐multinomial model.}
+#'   \item{resids_dm}{Mahalanobis residuals (`mdres`) for the Dirichlet-multinomial model.}
 #'   \item{resids_mln}{Mahalanobis residuals (`mdres`) for the MLN model.}
 #' }
 #'
@@ -29,7 +29,7 @@
 #' # run all three fits & diagnostics
 #' pollen_res <- run_pollen_models(n_iter = 1500, burn_in = 500, thin = 5, P = 500)
 #'
-#' # view KS‐tests & QQ‐plots
+#' # view KS-tests & QQ-plots
 #' summary(pollen_res$resids_mlr)
 #' summary(pollen_res$resids_dm)
 #' summary(pollen_res$resids_mln)
@@ -37,7 +37,7 @@
 #'
 #' @importFrom stats rmultinom
 #' @importFrom mvnfast rmvn
-#' @importFrom utils txtProgressBar setTxtProgressBar flush.console
+#' @importFrom utils txtProgressBar setTxtProgressBar flush.console data
 #' @importFrom MGLM MGLMreg rdirmn
 #' @export
 run_pollen_models <- function(n_iter   = 1000,
@@ -50,26 +50,27 @@ run_pollen_models <- function(n_iter   = 1000,
   if (!requireNamespace("MGLM", quietly = TRUE)) stop("Install the 'MGLM' package for MGLMreg()")
 
   ## 1) load data
-  data(pollen, package = "MM")
+  data(pollen, package = "MM", envir = environment())
+  pollen <- as.data.frame(pollen)
   Y  <- as.matrix(pollen)
   N  <- nrow(Y)
-  PA <- rowSums(Y)
+  n <- rowSums(Y)
   J  <- ncol(Y)
 
-  X <- matrix(1, nrow = N, ncol = 1)  # intercept‐only design
+  X <- matrix(1, nrow = N, ncol = 1)  # intercept-only design
 
   ## 2) fit M-Logit (multinomial) and Dirichlet-multinomial via MGLM
-  message("▶ Fitting multinomial-logistic model using MGLMreg()")
+  message("? Fitting multinomial-logistic model using MGLMreg()")
   fit_mlr <- suppressWarnings(MGLMreg(cbind(Pinus, Abies, Quercus, Alnus) ~ 1,
                      data = as.data.frame(pollen), dist = "MN"))
   cat("Done: \n")
-  message("▶ Fitting Dirichlet-lmultinomial model using MGLMreg()")
+  message("? Fitting Dirichlet-lmultinomial model using MGLMreg()")
   fit_dm  <- suppressWarnings(MGLMreg(cbind(Pinus, Abies, Quercus, Alnus) ~ 1,
                      data = as.data.frame(pollen), dist = "DM"))
 
-  ## 3) fit fixed‐effects MLN
+  ## 3) fit fixed-effects MLN
   cat("Done: \n")
-  message("▶ Fitting multinomial-logistic-normal model using FMLN()")
+  message("? Fitting multinomial-logistic-normal model using FMLN()")
   fit_mln <- FMLN(
     Y              = Y,
     X              = X,
@@ -82,31 +83,31 @@ run_pollen_models <- function(n_iter   = 1000,
 
   ## 4) prepare predictive replicates
   cat("Done: \n")
-  message("▶ Drawing sampling distributions of predicted values from each model")
+  message("? Drawing sampling distributions of predicted values from each model")
   # 4a) MN model: draw P full-dataset replicates
   probs_mlr <- fit_mlr@fitted
   Y_pred_mlr <- vector("list", P)
   for (p_i in seq_len(P)) {
     M <- t(sapply(seq_len(N),
-                  function(i) rmultinom(1, size = PA[i], prob = probs_mlr[i, ])))
+                  function(i) rmultinom(1, size = n[i], prob = probs_mlr[i, ])))
     Y_pred_mlr[[p_i]] <- M
   }
 
-  # 4b) DM model: draw P replicates with Dirichlet‐multinomial
+  # 4b) DM model: draw P replicates with Dirichlet-multinomial
   alpha_hat <- exp(fit_dm@coefficients)
   Y_pred_dm <- vector("list", P)
   for (p_i in seq_len(P)) {
     M <- t(sapply(seq_len(N),
                   function(i) MGLM::rdirmn(n    = 1,
-                                           size = PA[i],
+                                           size = n[i],
                                            alpha = alpha_hat)))
     Y_pred_dm[[p_i]] <- M
   }
 
-  # 4c) MLN model: use posterior‐mean β and Σ to draw P replicates
+  # 4c) MLN model: use posterior-mean ? and ? to draw P replicates
   # posterior means:
-  beta_arr  <- simplify2array(fit_mln$beta_chain)    # p × d × n_saves
-  Sigma_arr <- simplify2array(fit_mln$sigma_chain)   # d × d × n_saves
+  beta_arr  <- simplify2array(fit_mln$beta_chain)    # p ? d ? n_saves
+  Sigma_arr <- simplify2array(fit_mln$sigma_chain)   # d ? d ? n_saves
   beta_mean  <- apply(beta_arr,  c(1,2), mean)
   Sigma_mean <- apply(Sigma_arr, c(1,2), mean)
 
@@ -116,22 +117,22 @@ run_pollen_models <- function(n_iter   = 1000,
       X     = X,
       beta  = beta_mean,
       Sigma = Sigma_mean,
-      PA    = PA,
+      n    = n,
       mixed = FALSE
     )
   }
 
-  ## 5) compute Mahalanobis‐residuals
+  ## 5) compute Mahalanobis-residuals
   cat("Done: \n")  # ensure we start on a fresh line
-  message("▶ Computing MDRes for multinomial‐logit model")
+  message("? Computing MDRes for multinomial-logit model")
   resids_mlr <- MDres(Y, Y_pred_mlr)
 
   cat("\nDone: \n")  # ensure we start on a fresh line
-  message("▶ Computing MDRes for Dirichlet-multinomial model")
+  message("? Computing MDRes for Dirichlet-multinomial model")
   resids_dm  <- MDres(Y, Y_pred_dm)
 
   cat("\nDone: \n")  # ensure we start on a fresh line
-  message("▶ Computing MDRes for multinomial‐logistic-normal model")
+  message("? Computing MDRes for multinomial-logistic-normal model")
   resids_mln <- MDres(Y, Y_pred_mln)
 
   ## return all results
@@ -151,3 +152,4 @@ run_pollen_models <- function(n_iter   = 1000,
 }
 
 ## To Do: Add baseball and bird examples from Gerber \& Craig (2024)
+

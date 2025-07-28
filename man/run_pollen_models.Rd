@@ -2,7 +2,7 @@
 % Please edit documentation in R/real_data_examples.R
 \name{run_pollen_models}
 \alias{run_pollen_models}
-\title{Real‐Data Example: Pollen Data – MN, DM & MLN Models}
+\title{Real-Data Example: Pollen Data - MN, DM & MLN Models}
 \usage{
 run_pollen_models(
   n_iter = 1000,
@@ -27,20 +27,20 @@ run_pollen_models(
 A list with components:
 \describe{
 \item{fit_mlr}{The \code{MGLMreg} object for the multinomial logit fit.}
-\item{fit_dm}{The \code{MGLMreg} object for the Dirichlet‐multinomial fit.}
-\item{fit_mln}{The list returned by \code{FMLN()} for the fixed‐effects MLN fit.}
+\item{fit_dm}{The \code{MGLMreg} object for the Dirichlet-multinomial fit.}
+\item{fit_mln}{The list returned by \code{FMLN()} for the fixed-effects MLN fit.}
 \item{Y_pred_mlr}{List of length P of \eqn{N \times J} count matrices sampled from the MN model.}
 \item{Y_pred_dm}{List of length P of \eqn{N \times J} count matrices sampled from the DM model.}
-\item{Y_pred_mln}{List of length P of \eqn{N \times J} count matrices sampled from the MLN model (using posterior‐mean parameters).}
+\item{Y_pred_mln}{List of length P of \eqn{N \times J} count matrices sampled from the MLN model (using posterior-mean parameters).}
 \item{resids_mlr}{Mahalanobis residuals (\code{mdres}) for the multinomial logit model.}
-\item{resids_dm}{Mahalanobis residuals (\code{mdres}) for the Dirichlet‐multinomial model.}
+\item{resids_dm}{Mahalanobis residuals (\code{mdres}) for the Dirichlet-multinomial model.}
 \item{resids_mln}{Mahalanobis residuals (\code{mdres}) for the MLN model.}
 }
 }
 \description{
-This function reproduces the pollen‐data example from Gerber & Craig, fitting three
-models to the “pollen” counts (multinomial logit, Dirichlet‐multinomial, and
-multinomial-logistic‐normal), drawing replicate from fitted sampling distributions, and computing
+This function reproduces the pollen-data example from Gerber & Craig, fitting three
+models to the "pollen" counts (multinomial logit, Dirichlet-multinomial, and
+multinomial-logistic-normal), drawing replicate from fitted sampling distributions, and computing
 Mahalanobis residuals for each model.
 }
 \examples{
@@ -48,7 +48,7 @@ Mahalanobis residuals for each model.
 # run all three fits & diagnostics
 pollen_res <- run_pollen_models(n_iter = 1500, burn_in = 500, thin = 5, P = 500)
 
-# view KS‐tests & QQ‐plots
+# view KS-tests & QQ-plots
 summary(pollen_res$resids_mlr)
 summary(pollen_res$resids_dm)
 summary(pollen_res$resids_mln)

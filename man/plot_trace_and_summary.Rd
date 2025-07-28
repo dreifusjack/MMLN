@@ -30,7 +30,7 @@ d       = 2,
 beta    = matrix(c(-2, 0.5, 1, -0.), nrow = 2, ncol = 2),
 Sigma   = diag(c(1.2, .7)),
 Phi     = diag(c(0.5, 0.3)),
-PA_mean = 100)
+n_mean = 100)
 
 res <- MMLN(
 W       = sim$W,

@@ -265,7 +265,7 @@ normbetaloglike <- function(YMuW_vec, Sigma) {
 #' @param beta Numeric matrix (p × d). Fixed-effect coefficient matrix.
 #' @param Sigma Numeric matrix (d × d). Covariance matrix for within-group latent errors.
 #' @param Phi Numeric matrix (d × d). Covariance matrix for group-level random intercepts.
-#' @param PA_mean Numeric. Mean of Poisson distribution for total counts per observation (default 200).
+#' @param n_mean Numeric. Mean of Poisson distribution for total counts per observation (default 200).
 #'
 #' @return A named list containing:
 #' \describe{
@@ -273,7 +273,7 @@ normbetaloglike <- function(YMuW_vec, Sigma) {
 #'   \item{X}{N × p design matrix for fixed effects.}
 #'   \item{Z}{N × m design matrix for random intercepts.}
 #'   \item{id}{Integer vector of group identifiers (length N).}
-#'   \item{PA}{Integer vector of total counts per observation (length N).}
+#'   \item{n_mean}{Integer vector of total counts per observation (length N).}
 #'   \item{beta}{Input fixed-effect coefficient matrix.}
 #'   \item{Sigma}{Input within-group error covariance matrix.}
 #'   \item{Phi}{Input random-intercept covariance matrix.}
@@ -289,7 +289,7 @@ normbetaloglike <- function(YMuW_vec, Sigma) {
 #'   beta    = matrix(c(0.5, -1, 0.2, 0.3, 0.7, -0.4), nrow = 3, ncol = 2),
 #'   Sigma   = diag(2),
 #'   Phi     = diag(c(0.5, 0.5)),
-#'   PA_mean = 150
+#'   n_mean  = 150
 #' )
 #' str(sim_data)
 #' }
@@ -303,7 +303,7 @@ simulate_mixed_mln_data <- function(
     beta,
     Sigma,
     Phi,
-    PA_mean = 200
+    n_mean = 200
 ) {
   if (length(n_i) == 1) {
     n_i <- rep(n_i, m)
@@ -313,21 +313,21 @@ simulate_mixed_mln_data <- function(
   X <- cbind(1, matrix(rnorm(N * (p - 1)), nrow = N, ncol = p - 1))
   Z <- model.matrix(~ factor(id) - 1)
   psi_mat <- mvnfast::rmvn(m, mu = rep(0, d), sigma = Phi)
-  PA <- round(rpois(N, PA_mean))
+  n <- round(rpois(N, n_mean))
   Y <- matrix(NA, nrow = N, ncol = d + 1)
   for (j in seq_len(N)) {
     eps <- mvnfast::rmvn(1, mu = rep(0, d), sigma = Sigma)
     w_j <- X[j, , drop = FALSE] %*% beta + eps + psi_mat[id[j], ]
     exp_w <- exp(w_j)
     probs <- c(exp_w / (1 + sum(exp_w)), 1 / (1 + sum(exp_w)))
-    Y[j, ] <- as.vector(rmultinom(1, size = PA[j], prob = probs))
+    Y[j, ] <- as.vector(rmultinom(1, size = n[j], prob = probs))
   }
   list(
     Y = Y,
     X = X,
     Z = Z,
     id = id,
-    PA = PA,
+    n = n,
     beta = beta,
     Sigma = Sigma,
     Phi = Phi

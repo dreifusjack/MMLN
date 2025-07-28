@@ -4,7 +4,7 @@
 \alias{simulate_mixed_mln_data}
 \title{simulate_mixed_mln_data: Simulate mixed-effects MLN data with random intercepts}
 \usage{
-simulate_mixed_mln_data(m, n_i, p, d, beta, Sigma, Phi, PA_mean = 200)
+simulate_mixed_mln_data(m, n_i, p, d, beta, Sigma, Phi, n_mean = 200)
 }
 \arguments{
 \item{m}{Integer. Number of groups.}
@@ -21,7 +21,7 @@ simulate_mixed_mln_data(m, n_i, p, d, beta, Sigma, Phi, PA_mean = 200)
 
 \item{Phi}{Numeric matrix (d × d). Covariance matrix for group-level random intercepts.}
 
-\item{PA_mean}{Numeric. Mean of Poisson distribution for total counts per observation (default 200).}
+\item{n_mean}{Numeric. Mean of Poisson distribution for total counts per observation (default 200).}
 }
 \value{
 A named list containing:
@@ -30,7 +30,7 @@ A named list containing:
 \item{X}{N × p design matrix for fixed effects.}
 \item{Z}{N × m design matrix for random intercepts.}
 \item{id}{Integer vector of group identifiers (length N).}
-\item{PA}{Integer vector of total counts per observation (length N).}
+\item{n_mean}{Integer vector of total counts per observation (length N).}
 \item{beta}{Input fixed-effect coefficient matrix.}
 \item{Sigma}{Input within-group error covariance matrix.}
 \item{Phi}{Input random-intercept covariance matrix.}
@@ -49,7 +49,7 @@ sim_data <- simulate_mixed_mln_data(
   beta    = matrix(c(0.5, -1, 0.2, 0.3, 0.7, -0.4), nrow = 3, ncol = 2),
   Sigma   = diag(2),
   Phi     = diag(c(0.5, 0.5)),
-  PA_mean = 150
+  n_mean  = 150
 )
 str(sim_data)
 }
