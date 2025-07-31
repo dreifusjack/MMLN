@@ -1,6 +1,6 @@
 #' Real-Data Example: Pollen Data - MN, DM & MLN Models
 #'
-#' This function reproduces the pollen-data example from Gerber & Craig, fitting three
+#' This function reproduces the pollen-data example from Gerber & Craig (2024), fitting three
 #' models to the "pollen" counts (multinomial logit, Dirichlet-multinomial, and
 #' multinomial-logistic-normal), drawing replicate from fitted sampling distributions, and computing
 #' Mahalanobis residuals for each model.
@@ -151,5 +151,164 @@ run_pollen_models <- function(n_iter   = 1000,
   return(output)
 }
 
-## To Do: Add baseball and bird examples from Gerber \& Craig (2024)
+#' Prepare Cleaned Lahman Baseball Data for Multinomial Modeling
+#'
+#' This function cleans and processes data from the \pkg{Lahman} database to produce a usable dataset
+#' for modeling MLB player batting outcomes. It returns multinomial response data (`Y`), standardized predictors (`X`),
+#' and a random intercept design matrix (`Z`) for player-level effects.
+#'
+#' The output includes only non-pitcher players from the American and National Leagues (post-1900), and
+#' aggregates data by player-season (grouping across stints and teams). It collapses batting outcomes
+#' into home runs, walks, strikeouts, and other outcomes. Predictors include physical measurements,
+#' age (and age²), batting side, league, and a grouped fielding position indicator. Investigating the code,
+#' it should not be difficult to adjust the outcomes investigated and/or the predictors.
+#'
+#' @return A list with components:
+#' \describe{
+#'   \item{Y}{An \eqn{N=37845 \times J=4} matrix of batting outcome counts: HR, BB, SO, and Other.}
+#'   \item{X}{An \eqn{N=37845 \times p=11} numeric matrix of standardized predictors.}
+#'   \item{Z}{An \eqn{N=37845 \times m=5921} indicator matrix for random intercepts by playerID.}
+#' }
+#'
+#' @examples
+#' \dontrun{
+#' data <- clean_Lahman_data()
+#' str(data$X)
+#' colnames(data$Z)[1:5]
+#' }
+#'
+#' @importFrom Lahman Batting People Fielding
+#' @importFrom stats model.matrix
+#' @importFrom dplyr mutate group_by summarise filter arrange recode select
+#' @export
+
+clean_Lahman_data <- function(){
+  ## dependency
+  if (!requireNamespace("Lahman", quietly = TRUE)) stop("Install the 'Lahman' package to get MLB data")
+  if (!requireNamespace("dplyr", quietly = TRUE)) stop("Install the 'dplyr' package for easy data manipulation")
+  
+  ## 1) load data
+  data(Batting, package = "Lahman", envir = environment())
+  data(People, package = "Lahman", envir = environment())
+  data(Fielding, package = "Lahman", envir = environment())
+
+  # Let's only care about AL and NL, and post 1900 (Modern Era)
+  MLB_Batting <- Batting[which(Batting$lgID %in% c("AL", "NL") & Batting$yearID > 1900),]
+
+  # Now, merge all People information into MLB_Batting
+  MLB_Merged <- merge(MLB_Batting, People, by = "playerID")
+
+  # Sort by name, year, stint
+  MLB_Merged <- MLB_Merged %>%
+    arrange(playerID, yearID, stint)
+
+  # Separate into Info, X, and y data frames
+  # Info (keep some information which may be useful to refer to later; i.e. team or birthCountry)
+  MLB_Info <- MLB_Merged[,c("playerID", "nameFirst", "nameLast", "yearID", "teamID", "lgID", "birthDate", "birthCountry")]
+
+  # X (predictors; will need to create some and may not use all)
+  MLB_Merged$age <- MLB_Merged$yearID - MLB_Merged$birthYear
+  MLB_X <- MLB_Merged[,c("weight", "height", "age", "bats", "throws", "lgID")]
+
+  # Want to add Position information (need to use Fielding)
+  # Filter Fielding the same way as above
+  MLB_Fielding <- Fielding[which(Fielding$lgID %in% c("AL", "NL") & Fielding$yearID > 1900),]
+  # Replace missing InnOuts with 0
+  MLB_Fielding <- MLB_Fielding %>%
+    mutate(InnOuts = ifelse(is.na(InnOuts), 0, InnOuts))
+  # Get the most played position per player-year-stint (will assume any NA are DH/PH in a sec)
+  Primary_Pos <- MLB_Fielding %>%
+    group_by(playerID, yearID, stint) %>% # should be unique for everyone
+    slice_max(order_by = InnOuts, n = 1, with_ties = FALSE) %>%
+    select(playerID, yearID, stint, POS)
+  # Add to MLB_Merged
+  MLB_Merged_Pos <- MLB_Merged %>%
+    left_join(Primary_Pos, by = c("playerID", "yearID", "stint"))
+  # Finally put it into MLB_X and then update DH/PH for the NA accordingly
+  MLB_X$pos <- MLB_Merged_Pos$POS
+  MLB_X$pos[is.na(MLB_X$pos) & (
+    MLB_Merged_Pos$yearID == 2020 | # COVID
+    (MLB_Merged_Pos$lgID == "AL" & MLB_Merged_Pos$yearID >= 1973) | # AL DH
+    (MLB_Merged_Pos$lgID == "NL" & MLB_Merged_Pos$yearID >= 2023) # NL DH
+  )] <- "DH"
+  MLB_X$pos[is.na(MLB_X$pos)] <- "PH"
+
+  # y (output; may combine to reduce number of categories, but must sum up to PA)
+  MLB_y <- cbind("X1B" = MLB_Merged$H - rowSums(MLB_Merged[,c("X2B", "X3B", "HR")]), 
+                MLB_Merged[,c("X2B", "X3B", "HR", "BB", "SO", "HBP", "SH", "SF")])
+  MLB_y <- cbind(MLB_y, "OIP" = rowSums(MLB_Merged[,c("AB", "BB", "HBP", "SH", "SF")]) - rowSums(MLB_y))
+
+  # save the PA (plate appearances; exposure for the Multinomial)
+  PA <- rowSums(MLB_y)
+
+  # Turn the data frames into useable matrices
+  # Let's focus on the three true outcomes (HR, BB, SO, Other)
+  Y <- as.matrix(cbind(MLB_y[,c("HR", "BB", "SO")], "Other" = PA - rowSums(MLB_y[,c("HR", "BB", "SO")])))
+
+  # For batting, throws is probably not important, so remove it
+  # Add indicator variables for the categorical columns
+  # Add a quadratic age term
+  # drop unused levels first
+  MLB_X$lgID <- droplevels(factor(MLB_X$lgID))
+  # some unknown batting hands
+  MLB_X$bats <- as.character(MLB_X$bats)
+  MLB_X$bats[is.na(MLB_X$bats)] <- "U"
+  MLB_X$bats[MLB_X$bats == "B"] <- "S"
+  MLB_X$bats <- factor(MLB_X$bats)
+  MLB_X$bats <- droplevels(factor(MLB_X$bats))
+  # for ease, combine Positions into C, INF, OF, P, DH
+  MLB_X$pos_group <- recode(MLB_X$pos,
+                            "C" = "C",
+                            "1B" = "IF", "2B" = "IF", "SS" = "IF", "3B" = "IF",
+                            "OF" = "OF",
+                            "P" = "P",
+                            "DH" = "DPH", "PH" = "DPH",
+                            .default = "C")
+  MLB_X$pos_group <- factor(MLB_X$pos_group)
+  # scale numeric features
+  MLB_numeric <- cbind(MLB_X[,c("weight", "height", "age")], 
+                      "age2" = MLB_X$age^2)
+
+  X <- as.matrix(cbind(scale(MLB_numeric),
+                model.matrix(~ bats + lgID + pos_group, data = MLB_X)[,-1]))
+
+  # Now we need Z for the random effects; these are the player intercepts
+  # based on playerID
+  Z <- model.matrix(~ playerID - 1, data = MLB_Merged)
+
+  # To make it take less time, and actually fit, Update Y, X, and Z to:
+  # If a player played in the same league in the same year, combine those rows
+  # Ignore pitchers
+  # Keep only rows where PA > 0
+  MLB_Combo <- cbind(MLB_Info[,c("playerID", "yearID", "lgID")],
+                    PA = PA,
+                    Y,
+                    X)
+  MLB_Combo$pos <- MLB_X$pos
+  MLB_Combo <- MLB_Combo %>%
+    filter(pos != "P", PA > 0)
+
+  MLB_Combo <- MLB_Combo %>%
+    group_by(playerID, yearID, lgID) %>%
+    summarise(
+      across(c(HR, BB, SO, Other, PA), sum),
+      across(where(is.numeric) & !c(HR, BB, SO, Other, PA), mean),
+      .groups = "drop"
+    )
+
+  # New matrices
+  Y <- as.matrix(MLB_Combo[, c("HR", "BB", "SO", "Other")])
+  PA <- MLB_Combo$PA
+  X <- as.matrix(MLB_Combo %>% select(-playerID, -yearID, -lgID, -HR, -BB, -SO, -Other, -PA, -pos_groupP))
+  Z <- model.matrix(~ playerID - 1, data = MLB_Combo)
+
+  output = list(
+    Y = Y,
+    X = X,
+    Z = Z
+  )
+
+  return(output)
+  
+}
 

@@ -140,7 +140,11 @@ FMLN <- function(Y, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
       setTxtProgressBar(pb, i)
       elapsed <- Sys.time() - start_time
       eta <- (as.numeric(elapsed) / i) * (n_iter - i)
-      cat(sprintf("\r ETA: %s", format(.POSIXct(eta, tz = "GMT"), "%M:%S")))
+      eta_str <- sprintf("%02d:%02d:%02d", 
+                     eta %/% 3600, 
+                     (eta %% 3600) %/% 60, 
+                     round(eta %% 60))
+      cat(sprintf("\r ETA: %s", eta_str)) #cat(sprintf("\r ETA: %s", format(.POSIXct(eta, tz = "GMT"), "%M:%S")))
       flush.console()
     }
   }
@@ -321,7 +325,11 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
       setTxtProgressBar(pb, it)
       elapsed <- Sys.time() - start_time
       eta <- (as.numeric(elapsed) / it) * (n_iter - it)
-      cat(sprintf("\r ETA: %s", format(.POSIXct(eta, tz = "GMT"), "%M:%S")))
+      eta_str <- sprintf("%02d:%02d:%02d", 
+                     eta %/% 3600, 
+                     (eta %% 3600) %/% 60, 
+                     round(eta %% 60))
+      cat(sprintf("\r ETA: %s", eta_str)) #cat(sprintf("\r ETA: %s", format(.POSIXct(eta, tz = "GMT"), "%M:%S")))
       flush.console()
     }
   }
