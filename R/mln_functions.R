@@ -118,15 +118,25 @@ FMLN <- function(Y, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
 
     accept <- log(runif(N)) < ratio
     W[accept, ] <- W_new[accept, ]
+    W[is.na(W)] <- 0
 
     R <- W
     beta_hat <- tcrossprod(S_xx_inv, t(crossprod(X, R)))
     post_beta_vec_cov <- kronecker(S_xx_inv, Sigma)
     post_beta_vec <- rmvn(1, as.vector(beta_hat), post_beta_vec_cov)
     beta <- matrix(post_beta_vec, nrow = p)
+    
+    # Running into non positive-definite issues, so let's try jittering
+    S <- prior_settings$Lambda_S + crossprod(W - X %*% beta)
+    S <- (S + t(S)) / 2
+    diag(S) <- diag(S) + 1e-8
+
+    Wishscale <- solve(S)
+    Wishscale <- (Wishscale + t(Wishscale)) / 2
+    diag(Wishscale) <- diag(Wishscale) + 1e-8
 
     Sigma <- chol2inv(chol(rWishart(1, df = prior_settings$nu_S + N,
-                                    Sigma = solve(prior_settings$Lambda_S + crossprod(W - X %*% beta)))[,,1]))
+                                    Sigma = Wishscale)[,,1]))
     Sigma_inv <- chol2inv(chol(Sigma))
 
     if (i %in% keep_iters) {
@@ -138,13 +148,15 @@ FMLN <- function(Y, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
 
     if (verbose && (i %% max(1, floor(n_iter / 100)) == 0 || i == n_iter)) {
       setTxtProgressBar(pb, i)
-      elapsed <- Sys.time() - start_time
-      eta <- (as.numeric(elapsed) / i) * (n_iter - i)
-      eta_str <- sprintf("%02d:%02d:%02d", 
-                     eta %/% 3600, 
-                     (eta %% 3600) %/% 60, 
-                     round(eta %% 60))
-      cat(sprintf("\r ETA: %s", eta_str)) #cat(sprintf("\r ETA: %s", format(.POSIXct(eta, tz = "GMT"), "%M:%S")))
+      elapsed_sec <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
+      eta_sec     <- elapsed_sec / i * (n_iter - i)
+
+      h <- floor(eta_sec / 3600)
+      m <- floor((eta_sec %% 3600) / 60)
+      s <- round(eta_sec %% 60)
+
+      eta_str <- sprintf("%02d:%02d:%02d", h, m, s)
+      cat(sprintf("\r ETA: %s", eta_str))
       flush.console()
     }
   }
@@ -277,6 +289,7 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
 
     accepted <- log(runif(N)) < ratio
     W[accepted, ] <- W_prop[accepted, ]
+    W[is.na(W)] <- 0
 
     # update random intercepts psi_j
     R_tot <- W - X %*% beta
@@ -290,9 +303,19 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
 
     # update Phi
     S_psi <- t(psi) %*% psi
+
+    # Running into non positive-definite issues, so let's try jittering    
+    S1 <- prior_settings$Lambda_P + S_psi
+    S1 <- (S1 + t(S1)) / 2
+    diag(S1) <- diag(S1) + 1e-8
+
+    Wish1scale <- solve(S1)
+    Wish1scale <- (Wish1scale + t(Wish1scale)) / 2
+    diag(Wish1scale) <- diag(Wish1scale) + 1e-8
+
     Phi   <- solve(rWishart(1,
                             df    = prior_settings$nu_P + m,
-                            Sigma = solve(prior_settings$Lambda_P + S_psi))[,,1])
+                            Sigma = Wish1scale)[,,1])
 
     # update beta
     R     <- W - Z %*% psi
@@ -303,12 +326,24 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
                                   sigma = cov_b),
                     nrow = p)
 
+
+
     # update Sigma
     Eps   <- R - X %*% beta
     S_mat <- t(Eps) %*% Eps
+
+    # Running into non positive-definite issues, so let's try jittering    
+    S2 <- prior_settings$Lambda_S + S_mat
+    S2 <- (S2 + t(S2)) / 2
+    diag(S2) <- diag(S2) + 1e-8
+
+    Wish2scale <- solve(S2)
+    Wish2scale <- (Wish2scale + t(Wish2scale)) / 2
+    diag(Wish2scale) <- diag(Wish2scale) + 1e-8
+
     Sigma <- solve(rWishart(1,
                             df    = prior_settings$nu_S + N,
-                            Sigma = solve(prior_settings$Lambda_S + S_mat))[,,1])
+                            Sigma = Wish2scale)[,,1])
     Sigma_inv <- chol2inv(chol(Sigma))
 
     # save samples
