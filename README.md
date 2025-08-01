@@ -210,7 +210,7 @@ Y_pred_list_m <- lapply(seq_along(mlb_m$w_chain), function(i) {
 resids_m <- MDres(baseball_example$Y, Y_pred_list_m)
 summary(resids_m)
 
-# 4. Evaluate posterior parameter means of the better model (fixed effects)
+# 4. Evaluate posterior parameter means of the fixed effects model
 post_beta <- apply(simplify2array(mlb_f$beta_chain), c(1,2), mean)
 row.names(post_beta) <- c("int", colnames(baseball_example$X))
 colnames(post_beta) <- colnames(baseball_example$Y)[1:3]
