@@ -146,6 +146,7 @@ compute_dic <- function(loglik_chain, loglik_hat) {
 #' @param Z Optional numeric matrix (N by q) of random-effects design (required if mixed = TRUE).
 #' @param psi Optional numeric matrix (q by (J-1)) of random-effects coefficients (required if mixed = TRUE).
 #' @param mixed Logical; include random effects when TRUE (default TRUE).
+#' @param verbose Logical; include progress bar when TRUE (default TRUE).
 #'
 #' @return Numeric matrix (N by J) of simulated counts for each category.
 #'
@@ -158,7 +159,8 @@ compute_dic <- function(loglik_chain, loglik_hat) {
 #' @export
 sample_posterior_predictive <- function(X, beta, Sigma, n,
                                         Z = NULL, psi = NULL,
-                                        mixed = TRUE) {
+                                        mixed = TRUE,
+                                        verbose = TRUE) {
   N <- nrow(X)
   d <- ncol(Sigma)
   # linear predictor
@@ -173,15 +175,25 @@ sample_posterior_predictive <- function(X, beta, Sigma, n,
   P_hat <- alr_inv(W_hat)
   # sample counts per observation
   Y <- matrix(NA, nrow = N, ncol = d + 1)
+  if (verbose && interactive()) {
+    cat("Generating posterior predictive samples:\n")
+    start_time <- Sys.time()
+    last_pct   <- -1
+  }
   for(i in seq_len(N)) {
+    pct <- floor(100 * i / N)
+    if (verbose && interactive() && (pct != last_pct || i == N)) {
+      last_pct <- pct
+      elapsed <- Sys.time() - start_time
+      eta <- (as.numeric(elapsed) / i) * (N - i)
+      cat(sprintf("\r[%3d%%] ETA: %s", pct, format(.POSIXct(eta, tz="GMT"), "%M:%S")))
+      flush.console()
+    }
     size_i <- if(length(n) > 1) n[i] else n
     Y[i, ] <- rmultinom(1, size = size_i, prob = P_hat[i, ])
   }
   Y
 }
-
-
-
 
 
 

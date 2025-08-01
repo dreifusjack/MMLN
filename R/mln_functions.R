@@ -22,6 +22,7 @@
 #'   \item{beta_chain}{List of saved β matrices (p × (J-1)) across MCMC samples.}
 #'   \item{sigma_chain}{List of saved Sigma matrices ((J-1) × (J-1)).}
 #'   \item{w_chain}{List of latent W matrices (N × (J-1)).}
+#'   \item{mhaccept_chain}{List of Metropolis-Hastings acceptance ratios (length = n_iter).}
 #' }
 #'
 #' @examples
@@ -66,6 +67,7 @@ FMLN <- function(Y, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
   beta_chain <- vector("list", n_save)
   sigma_chain <- vector("list", n_save)
   w_chain <- vector("list", n_save)
+  mhaccept_chain <- vector("list", n_iter)
 
   warned_na_ratio <- FALSE
   if (verbose) pb <- txtProgressBar(min = 0, max = n_iter, style = 3)
@@ -117,6 +119,10 @@ FMLN <- function(Y, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
     ratio[is.na(ratio)] <- -Inf
 
     accept <- log(runif(N)) < ratio
+
+    # track acceptance ratio for tuning
+    mhaccept_chain[[i]] <- sum(accept) / N
+
     W[accept, ] <- W_new[accept, ]
     W[is.na(W)] <- 0
 
@@ -165,7 +171,8 @@ FMLN <- function(Y, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
   list(
     beta_chain = beta_chain,
     sigma_chain = sigma_chain,
-    w_chain = w_chain
+    w_chain = w_chain,
+    mhaccept_chain = mhaccept_chain
   )
 }
 
@@ -204,6 +211,7 @@ FMLN <- function(Y, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
 #'   \item{phi_chain}{List of saved Phi matrices ((J-1) × (J-1)) for random intercepts.}
 #'   \item{psi_chain}{List of saved random-intercept matrices (m × (J-1)).}
 #'   \item{w_chain}{List of latent W matrices (N × (J-1)).}
+#'   \item{mhaccept_chain}{List of Metropolis-Hastings acceptance ratios (length = n_iter).}
 #' }
 #'
 #' @examples
@@ -238,6 +246,7 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
   phi_chain   <- vector("list", n_save)
   psi_chain   <- vector("list", n_save)
   w_chain     <- vector("list", n_save)
+  mhaccept_chain <- vector("list", n_iter)
 
   # initialize
   W         <- alr(compress_counts(Y))   # from mln_helpers.R
@@ -288,6 +297,10 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
     ratio[is.na(ratio)] <- -Inf
 
     accepted <- log(runif(N)) < ratio
+
+    # track acceptance ratio for tuning
+    mhaccept_chain[[it]] <- sum(accepted) / N
+
     W[accepted, ] <- W_prop[accepted, ]
     W[is.na(W)] <- 0
 
@@ -358,13 +371,15 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
 
     if (verbose && (it %% max(1, floor(n_iter / 100)) == 0 || it == n_iter)) {
       setTxtProgressBar(pb, it)
-      elapsed <- Sys.time() - start_time
-      eta <- (as.numeric(elapsed) / it) * (n_iter - it)
-      eta_str <- sprintf("%02d:%02d:%02d", 
-                     eta %/% 3600, 
-                     (eta %% 3600) %/% 60, 
-                     round(eta %% 60))
-      cat(sprintf("\r ETA: %s", eta_str)) #cat(sprintf("\r ETA: %s", format(.POSIXct(eta, tz = "GMT"), "%M:%S")))
+      elapsed_sec <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
+      eta_sec     <- elapsed_sec / it * (n_iter - it)
+
+      h <- floor(eta_sec / 3600)
+      m <- floor((eta_sec %% 3600) / 60)
+      s <- round(eta_sec %% 60)
+
+      eta_str <- sprintf("%02d:%02d:%02d", h, m, s)
+      cat(sprintf("\r ETA: %s", eta_str))
       flush.console()
     }
   }
@@ -376,6 +391,7 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
     sigma_chain = sigma_chain,
     phi_chain   = phi_chain,
     psi_chain   = psi_chain,
-    w_chain     = w_chain
+    w_chain     = w_chain,
+    mhaccept_chain = mhaccept_chain
   )
 }

@@ -151,6 +151,23 @@ run_pollen_models <- function(n_iter   = 1000,
   return(output)
 }
 
+#' @importFrom stats model.matrix
+#' @importFrom magrittr %>%
+#' @importFrom dplyr mutate group_by summarise filter arrange recode select left_join slice_max coalesce ungroup across where pull n
+NULL
+
+if (getRversion() >= "2.15.1") {
+  utils::globalVariables(c(
+    "Batting",     "People",     "Fielding",
+    "lgID",        "playerID",   "yearID",
+    "debut",       "stint",      "InnOuts",
+    "POS",         "pos",        "HR",
+    "BB",          "SO",         "Other",
+    "batsU",       "pos_groupP",
+    "i",           "accept"
+  ))
+}
+
 #' Prepare Cleaned Lahman Baseball Data for Multinomial Modeling
 #'
 #' This function cleans and processes data from the \pkg{Lahman} database to produce a usable dataset
@@ -177,11 +194,7 @@ run_pollen_models <- function(n_iter   = 1000,
 #' colnames(data$Z)[1:5]
 #' }
 #'
-#' @importFrom Lahman Batting People Fielding
-#' @importFrom stats model.matrix
-#' @importFrom dplyr mutate group_by summarise filter arrange recode select
 #' @export
-
 clean_Lahman_data <- function(){
   ## dependency
   if (!requireNamespace("Lahman", quietly = TRUE)) stop("Install the 'Lahman' package to get MLB data")

@@ -11,7 +11,8 @@ sample_posterior_predictive(
   n,
   Z = NULL,
   psi = NULL,
-  mixed = TRUE
+  mixed = TRUE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ sample_posterior_predictive(
 \item{psi}{Optional numeric matrix (q by (J-1)) of random-effects coefficients (required if mixed = TRUE).}
 
 \item{mixed}{Logical; include random effects when TRUE (default TRUE).}
+
+\item{verbose}{Logical; include progress bar when TRUE (default TRUE).}
 }
 \value{
 Numeric matrix (N by J) of simulated counts for each category.

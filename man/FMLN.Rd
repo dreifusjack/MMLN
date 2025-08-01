@@ -46,6 +46,7 @@ A list with components:
 \item{beta_chain}{List of saved β matrices (p × (J-1)) across MCMC samples.}
 \item{sigma_chain}{List of saved Sigma matrices ((J-1) × (J-1)).}
 \item{w_chain}{List of latent W matrices (N × (J-1)).}
+\item{mhaccept_chain}{List of Metropolis-Hastings acceptance ratios (length = n_iter).}
 }
 }
 \description{

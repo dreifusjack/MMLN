@@ -16,13 +16,16 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: R (>= 3.5.0)
 Imports: 
-    stats,
+    dplyr,
     graphics,
+    magrittr,
+    MGLM,
     mvnfast,
-    utils,
-    MGLM
+    stats,
+    utils
 Suggests: 
-    MM,
-    testthat,
     knitr,
-    rmarkdown
+    Lahman,
+    MM,
+    rmarkdown,
+    testthat
