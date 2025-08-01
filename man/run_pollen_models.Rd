@@ -38,7 +38,7 @@ A list with components:
 }
 }
 \description{
-This function reproduces the pollen-data example from Gerber & Craig, fitting three
+This function reproduces the pollen-data example from Gerber & Craig (2024), fitting three
 models to the "pollen" counts (multinomial logit, Dirichlet-multinomial, and
 multinomial-logistic-normal), drawing replicate from fitted sampling distributions, and computing
 Mahalanobis residuals for each model.

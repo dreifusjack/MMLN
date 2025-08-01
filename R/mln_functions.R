@@ -22,6 +22,7 @@
 #'   \item{beta_chain}{List of saved β matrices (p × (J-1)) across MCMC samples.}
 #'   \item{sigma_chain}{List of saved Sigma matrices ((J-1) × (J-1)).}
 #'   \item{w_chain}{List of latent W matrices (N × (J-1)).}
+#'   \item{mhaccept_chain}{List of Metropolis-Hastings acceptance ratios (length = n_iter).}
 #' }
 #'
 #' @examples
@@ -66,6 +67,7 @@ FMLN <- function(Y, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
   beta_chain <- vector("list", n_save)
   sigma_chain <- vector("list", n_save)
   w_chain <- vector("list", n_save)
+  mhaccept_chain <- vector("list", n_iter)
 
   warned_na_ratio <- FALSE
   if (verbose) pb <- txtProgressBar(min = 0, max = n_iter, style = 3)
@@ -117,16 +119,30 @@ FMLN <- function(Y, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
     ratio[is.na(ratio)] <- -Inf
 
     accept <- log(runif(N)) < ratio
+
+    # track acceptance ratio for tuning
+    mhaccept_chain[[i]] <- sum(accept) / N
+
     W[accept, ] <- W_new[accept, ]
+    W[is.na(W)] <- 0
 
     R <- W
     beta_hat <- tcrossprod(S_xx_inv, t(crossprod(X, R)))
     post_beta_vec_cov <- kronecker(S_xx_inv, Sigma)
     post_beta_vec <- rmvn(1, as.vector(beta_hat), post_beta_vec_cov)
     beta <- matrix(post_beta_vec, nrow = p)
+    
+    # Running into non positive-definite issues, so let's try jittering
+    S <- prior_settings$Lambda_S + crossprod(W - X %*% beta)
+    S <- (S + t(S)) / 2
+    diag(S) <- diag(S) + 1e-8
+
+    Wishscale <- solve(S)
+    Wishscale <- (Wishscale + t(Wishscale)) / 2
+    diag(Wishscale) <- diag(Wishscale) + 1e-8
 
     Sigma <- chol2inv(chol(rWishart(1, df = prior_settings$nu_S + N,
-                                    Sigma = solve(prior_settings$Lambda_S + crossprod(W - X %*% beta)))[,,1]))
+                                    Sigma = Wishscale)[,,1]))
     Sigma_inv <- chol2inv(chol(Sigma))
 
     if (i %in% keep_iters) {
@@ -138,9 +154,15 @@ FMLN <- function(Y, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
 
     if (verbose && (i %% max(1, floor(n_iter / 100)) == 0 || i == n_iter)) {
       setTxtProgressBar(pb, i)
-      elapsed <- Sys.time() - start_time
-      eta <- (as.numeric(elapsed) / i) * (n_iter - i)
-      cat(sprintf("\r ETA: %s", format(.POSIXct(eta, tz = "GMT"), "%M:%S")))
+      elapsed_sec <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
+      eta_sec     <- elapsed_sec / i * (n_iter - i)
+
+      h <- floor(eta_sec / 3600)
+      m <- floor((eta_sec %% 3600) / 60)
+      s <- round(eta_sec %% 60)
+
+      eta_str <- sprintf("%02d:%02d:%02d", h, m, s)
+      cat(sprintf("\r ETA: %s", eta_str))
       flush.console()
     }
   }
@@ -149,7 +171,8 @@ FMLN <- function(Y, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
   list(
     beta_chain = beta_chain,
     sigma_chain = sigma_chain,
-    w_chain = w_chain
+    w_chain = w_chain,
+    mhaccept_chain = mhaccept_chain
   )
 }
 
@@ -188,6 +211,7 @@ FMLN <- function(Y, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
 #'   \item{phi_chain}{List of saved Phi matrices ((J-1) × (J-1)) for random intercepts.}
 #'   \item{psi_chain}{List of saved random-intercept matrices (m × (J-1)).}
 #'   \item{w_chain}{List of latent W matrices (N × (J-1)).}
+#'   \item{mhaccept_chain}{List of Metropolis-Hastings acceptance ratios (length = n_iter).}
 #' }
 #'
 #' @examples
@@ -222,6 +246,7 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
   phi_chain   <- vector("list", n_save)
   psi_chain   <- vector("list", n_save)
   w_chain     <- vector("list", n_save)
+  mhaccept_chain <- vector("list", n_iter)
 
   # initialize
   W         <- alr(compress_counts(Y))   # from mln_helpers.R
@@ -272,7 +297,12 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
     ratio[is.na(ratio)] <- -Inf
 
     accepted <- log(runif(N)) < ratio
+
+    # track acceptance ratio for tuning
+    mhaccept_chain[[it]] <- sum(accepted) / N
+
     W[accepted, ] <- W_prop[accepted, ]
+    W[is.na(W)] <- 0
 
     # update random intercepts psi_j
     R_tot <- W - X %*% beta
@@ -286,9 +316,19 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
 
     # update Phi
     S_psi <- t(psi) %*% psi
+
+    # Running into non positive-definite issues, so let's try jittering    
+    S1 <- prior_settings$Lambda_P + S_psi
+    S1 <- (S1 + t(S1)) / 2
+    diag(S1) <- diag(S1) + 1e-8
+
+    Wish1scale <- solve(S1)
+    Wish1scale <- (Wish1scale + t(Wish1scale)) / 2
+    diag(Wish1scale) <- diag(Wish1scale) + 1e-8
+
     Phi   <- solve(rWishart(1,
                             df    = prior_settings$nu_P + m,
-                            Sigma = solve(prior_settings$Lambda_P + S_psi))[,,1])
+                            Sigma = Wish1scale)[,,1])
 
     # update beta
     R     <- W - Z %*% psi
@@ -299,12 +339,24 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
                                   sigma = cov_b),
                     nrow = p)
 
+
+
     # update Sigma
     Eps   <- R - X %*% beta
     S_mat <- t(Eps) %*% Eps
+
+    # Running into non positive-definite issues, so let's try jittering    
+    S2 <- prior_settings$Lambda_S + S_mat
+    S2 <- (S2 + t(S2)) / 2
+    diag(S2) <- diag(S2) + 1e-8
+
+    Wish2scale <- solve(S2)
+    Wish2scale <- (Wish2scale + t(Wish2scale)) / 2
+    diag(Wish2scale) <- diag(Wish2scale) + 1e-8
+
     Sigma <- solve(rWishart(1,
                             df    = prior_settings$nu_S + N,
-                            Sigma = solve(prior_settings$Lambda_S + S_mat))[,,1])
+                            Sigma = Wish2scale)[,,1])
     Sigma_inv <- chol2inv(chol(Sigma))
 
     # save samples
@@ -319,9 +371,15 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
 
     if (verbose && (it %% max(1, floor(n_iter / 100)) == 0 || it == n_iter)) {
       setTxtProgressBar(pb, it)
-      elapsed <- Sys.time() - start_time
-      eta <- (as.numeric(elapsed) / it) * (n_iter - it)
-      cat(sprintf("\r ETA: %s", format(.POSIXct(eta, tz = "GMT"), "%M:%S")))
+      elapsed_sec <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
+      eta_sec     <- elapsed_sec / it * (n_iter - it)
+
+      h <- floor(eta_sec / 3600)
+      m <- floor((eta_sec %% 3600) / 60)
+      s <- round(eta_sec %% 60)
+
+      eta_str <- sprintf("%02d:%02d:%02d", h, m, s)
+      cat(sprintf("\r ETA: %s", eta_str))
       flush.console()
     }
   }
@@ -333,6 +391,7 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
     sigma_chain = sigma_chain,
     phi_chain   = phi_chain,
     psi_chain   = psi_chain,
-    w_chain     = w_chain
+    w_chain     = w_chain,
+    mhaccept_chain = mhaccept_chain
   )
 }

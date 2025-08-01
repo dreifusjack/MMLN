@@ -53,6 +53,7 @@ A list with:
 \item{phi_chain}{List of saved Phi matrices ((J-1) × (J-1)) for random intercepts.}
 \item{psi_chain}{List of saved random-intercept matrices (m × (J-1)).}
 \item{w_chain}{List of latent W matrices (N × (J-1)).}
+\item{mhaccept_chain}{List of Metropolis-Hastings acceptance ratios (length = n_iter).}
 }
 }
 \description{
