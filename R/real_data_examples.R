@@ -64,7 +64,7 @@ run_pollen_models <- function(n_iter   = 1000,
   fit_mlr <- suppressWarnings(MGLMreg(cbind(Pinus, Abies, Quercus, Alnus) ~ 1,
                      data = as.data.frame(pollen), dist = "MN"))
   cat("Done: \n")
-  message("? Fitting Dirichlet-lmultinomial model using MGLMreg()")
+  message("? Fitting Dirichlet-multinomial model using MGLMreg()")
   fit_dm  <- suppressWarnings(MGLMreg(cbind(Pinus, Abies, Quercus, Alnus) ~ 1,
                      data = as.data.frame(pollen), dist = "DM"))
 
@@ -106,8 +106,8 @@ run_pollen_models <- function(n_iter   = 1000,
 
   # 4c) MLN model: use posterior-mean ? and ? to draw P replicates
   # posterior means:
-  beta_arr  <- simplify2array(fit_mln$beta_chain)    # p ? d ? n_saves
-  Sigma_arr <- simplify2array(fit_mln$sigma_chain)   # d ? d ? n_saves
+  beta_arr  <- simplify2array(fit_mln$beta_chain)
+  Sigma_arr <- simplify2array(fit_mln$sigma_chain)
   beta_mean  <- apply(beta_arr,  c(1,2), mean)
   Sigma_mean <- apply(Sigma_arr, c(1,2), mean)
 
@@ -118,7 +118,8 @@ run_pollen_models <- function(n_iter   = 1000,
       beta  = beta_mean,
       Sigma = Sigma_mean,
       n    = n,
-      mixed = FALSE
+      mixed = FALSE,
+      verbose = FALSE
     )
   }
 

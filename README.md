@@ -31,7 +31,7 @@ sim <- simulate_mixed_mln_data(
   d       = 2,           # 3 outcome categories
   beta    = matrix(c(0.5, -1, 0.2, 0.3, 0.7, -0.4), 3, 2),
   Sigma   = diag(2),
-  Phi     = diag(2),
+  Phi     = 5*diag(2),
   n_mean = 200
 )
 
@@ -39,8 +39,8 @@ sim <- simulate_mixed_mln_data(
 res_f <- FMLN(
   Y            = sim$Y,
   X            = sim$X,
-  n_iter       = 2000,
-  burn_in      = 500,
+  n_iter       = 1000,
+  burn_in      = 300,
   thin         = 2,
   proposal     = "normbeta",
   verbose      = TRUE
@@ -51,8 +51,8 @@ res_m <- MMLN(
   Y            = sim$Y,
   X            = sim$X,
   Z            = sim$Z,
-  n_iter       = 2000,
-  burn_in      = 500,
+  n_iter       = 1000,
+  burn_in      = 300,
   thin         = 2,
   proposal     = "normbeta",
   verbose      = TRUE
@@ -80,7 +80,8 @@ Y_pred_list <- lapply(seq_along(res_m$w_chain), function(i) {
                               n = sim$n,
                               Z = sim$Z,
                               psi = res_m$psi_chain[[i]],
-                              mixed = TRUE
+                              mixed = TRUE,
+                              verbose = FALSE
   )
 })
 resids <- MDres(sim$Y, Y_pred_list)
@@ -92,7 +93,8 @@ Y_pred_list_ovd <- lapply(seq_along(res_f$w_chain), function(i) {
                               beta = res_f$beta_chain[[i]],
                               Sigma = res_f$sigma_chain[[i]],
                               n = sim$n,
-                              mixed = FALSE
+                              mixed = FALSE,
+                              verbose = FALSE
   )
 })
 resids_ovd <- MDres(sim$Y, Y_pred_list_ovd)
@@ -100,7 +102,7 @@ summary(resids_ovd)
 
 # 8. Should also show that incorrect model fit has higher DIC
 ll_chain_ovd <- sapply(res_f$w_chain,
-                   function(W) dmnl_loglik(W, sim$Y))
+                       function(W) dmnl_loglik(W, sim$Y))
 dic_res_ovd <- compute_dic(ll_chain_ovd, ll_hat)
 dic_res_ovd$DIC > dic_res$DIC
 ```

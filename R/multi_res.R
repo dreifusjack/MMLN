@@ -294,6 +294,8 @@ MDres <- function(Y, Y_pred_list) {
 #'
 #' @return Invisibly returns the Kolmogorov-Smirnov test object.
 #'
+#' @importFrom car qqPlot
+#'
 #' @export
 summary.mdres <- function(object, ...) {
   # `object` is just a numeric vector of residuals
@@ -307,7 +309,7 @@ summary.mdres <- function(object, ...) {
   print(ks)
 
   # QQ plot
-  qqnorm(object, main = "QQ Plot of Mahalanobis Residuals")
+  qqPlot(object, main = "QQ Plot of Mahalanobis Residuals", ylab = 'Residual Quantiles', xlab = "Theoretical Quantiles", line = "none", col.lines = "red", envelope = list(style = "lines"))
   abline(0, 1, col='red', lwd = 2)
 
   invisible(ks)
