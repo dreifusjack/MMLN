@@ -232,6 +232,19 @@ MDres <- function(Y, Y_pred_list) {
   mu_all <- apply(pred_array, 1:2, mean)
   Sigma_all <- lapply(seq_len(N), function(i) cov(t(pred_array[i,,])))
 
+  singulars <- unlist(lapply(Sigma_all, function(Sig) {
+    if (any(is.na(Sig))) {
+      return(TRUE)
+    }
+    ev <- eigen(Sig, symmetric = TRUE)$values
+    any(ev < 1e-8)
+  }))
+
+  if (any(singulars)) {
+    warning(sprintf("Covariance matrix singular for %d observations; results may be unreliable.",
+                    sum(singulars)))
+  }
+
   mds_list <- vector("list", N)
   if (interactive()) cat("Computing Mahalanobis distances:\n")
   start_time <- Sys.time()
@@ -246,7 +259,10 @@ MDres <- function(Y, Y_pred_list) {
     pred_i <- t(pred_array[i,,])
     w_obs_i <- alr_obs[i, ]
     obsi <- rbind(w_obs_i, pred_i)
-    mds_list[[i]] <- apply(obsi, 1, mahalanobis, center = mu_all[i,], cov = Sigma_all[[i]])
+    mds_list[[i]] <- tryCatch(
+      apply(obsi, 1, mahalanobis, center = mu_all[i,], cov = Sigma_all[[i]]),
+      error = function(e) NA
+    )
   }
 
   u_resids <- vapply(seq_len(N), function(i) {
