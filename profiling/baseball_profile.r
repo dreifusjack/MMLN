@@ -43,11 +43,11 @@ Y_pred_list_f <- lapply(seq_along(mlb_f$w_chain), function(i) {
                               verbose = FALSE
   )
 })
-mdres_res_profile_1 <- profvis({
+mdres_fmln_baseball_profile <- profvis({
   resids_f <- MDres(baseball_example$Y, Y_pred_list_f)
 })
 
-htmlwidgets::saveWidget(mdres_res_profile_1, file.path(script_dir, "mdres_fmln_baseball_profile.html"), selfcontained = TRUE)
+htmlwidgets::saveWidget(mdres_fmln_baseball_profile, file.path(script_dir, "mdres_fmln_baseball_profile.html"), selfcontained = TRUE)
 
 
 Y_pred_list_m <- lapply(seq_along(mlb_m$w_chain), function(i) {
@@ -60,11 +60,11 @@ Y_pred_list_m <- lapply(seq_along(mlb_m$w_chain), function(i) {
                               mixed = TRUE,
                               verbose = FALSE
   )
-})
-mdres_res_profile_2 <- profvis({
+})s
+mdres_mmln_baseball_profile <- profvis({
 resids_m <- MDres(baseball_example$Y, Y_pred_list_m)
 })
 
-htmlwidgets::saveWidget(mdres_res_profile_2, file.path(script_dir, "mdres_mmln_baseball_profile_2.html"), selfcontained = TRUE)
+htmlwidgets::saveWidget(mdres_mmln_baseball_profile, file.path(script_dir, "mdres_mmln_baseball_profile.html"), selfcontained = TRUE)
 
 
