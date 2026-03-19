@@ -257,6 +257,9 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
   Sigma_inv <- chol2inv(chol(Sigma))
   S_xx_inv  <- chol2inv(chol(crossprod(X)))
 
+  # Pre-compute group indices once. Z never changes across iterations.
+  group_idx <- build_group_idx(Z)
+
   warned_na_ratio <- FALSE
   if(verbose) {
     pb <- txtProgressBar(min = 0, max = n_iter, style = 3)
@@ -304,15 +307,9 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
     W[accepted, ] <- W_prop[accepted, ]
     W[is.na(W)] <- 0
 
-    # update random intercepts psi_j
+    ## update random intercepts psi_j (C++ implementation)
     R_tot <- W - X %*% beta
-    for(j in seq_len(m)) {
-      idx <- which(Z[, j] == 1)
-      R_j <- R_tot[idx, , drop = FALSE]
-      V_j <- solve(chol2inv(chol(Phi)) + length(idx) * Sigma_inv)
-      M_j <- V_j %*% (Sigma_inv %*% colSums(R_j))
-      psi[j, ] <- mvnfast::rmvn(1, mu = as.vector(M_j), sigma = V_j)
-    }
+    psi   <- update_psi_cpp(group_idx, R_tot, Phi, Sigma_inv)
 
     # update Phi
     S_psi <- t(psi) %*% psi
