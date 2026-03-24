@@ -1,6 +1,11 @@
 // [[Rcpp::depends(RcppArmadillo, RcppEigen)]]
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wignored-attributes"
 #include <RcppArmadillo.h>
 #include <RcppEigen.h>
+#pragma GCC diagnostic pop
+
 using namespace Rcpp;
 
 // DEV NOTE:

@@ -22,7 +22,6 @@ Imports:
     magrittr,
     MGLM,
     mvnfast,
-    RcppArmadillo,
     stats,
     utils,
     Rcpp (>= 1.0.0)

@@ -1,7 +1,5 @@
-# -Wno-ignored-attributes: suppresses ONLY the [-Wignored-attributes] warning class.
-# This is triggered by Eigen 3.3.x's SSE/SIMD headers under GCC 13+ / Rtools45
-# and is not actionable from our codebase — it requires a fix in Eigen itself (fixed in 3.4).
-# All other warning classes (-Wunused, -Wtype-limits, -Wsign-compare, etc.) remain active.
-# Remove this line once RcppEigen ships Eigen >= 3.4 on CRAN.
-PKG_CXXFLAGS = -Wno-ignored-attributes
-PKG_LIBS = $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e "RcppArmadillo::RcppArmadilloLdFlags()") $(BLAS_LIBS) $(LAPACK_LIBS) $(FLIBS)
+# Suppress [-Wignored-attributes] from Eigen 3.3.x SSE/SIMD headers under GCC 13+ / Rtools45.
+# Applied via -include so it covers RcppExports.cpp (auto-generated, cannot be edited directly).
+# Remove once RcppEigen ships Eigen >= 3.4 on CRAN.
+PKG_CXXFLAGS = -include suppress_eigen_warnings.h
+PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
