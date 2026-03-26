@@ -95,11 +95,10 @@ FMLN <- function(Y, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
       log_q_old <- apply(ymuPstar, 1, betaloglike, Sigma = mh_scale * Sigma)
       log_q_prop <- apply(ymuPstar_new, 1, betaloglike, Sigma = mh_scale * Sigma)
     } else if (proposal == "normbeta") {
-      W_new <- t(apply(ymu, 1, normbetapropdist, Sigma = mh_scale * Sigma))
-      ymuw <- cbind(ymu, W)
-      ymuw_new <- cbind(ymu, W_new)
-      log_q_old <- apply(ymuw, 1, normbetaloglike, Sigma = mh_scale * Sigma)
-      log_q_prop <- apply(ymuw_new, 1, normbetaloglike, Sigma = mh_scale * Sigma)
+      mh_update_output    <- mh_update_cpp(W, Y, Mu, mh_scale * Sigma)   # from c++ optimzations
+      W_new     <- mh_update_output$W_new
+      log_q_old <- mh_update_output$log_q_old
+      log_q_prop <- mh_update_output$log_q_new
     }
 
     W_diff <- W - Mu
@@ -137,7 +136,7 @@ FMLN <- function(Y, X, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, prior
     S <- (S + t(S)) / 2
     diag(S) <- diag(S) + 1e-8
 
-    Wishscale <- solve(S)
+    Wishscale <- chol2inv(chol(S))
     Wishscale <- (Wishscale + t(Wishscale)) / 2
     diag(Wishscale) <- diag(Wishscale) + 1e-8
 
@@ -283,9 +282,10 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
       log_q_old <- apply(cbind(ymu, P_old), 1, betaloglike, Sigma = mh_scale * Sigma)
       log_q_new <- apply(cbind(ymu, P_new), 1, betaloglike, Sigma = mh_scale * Sigma)
     } else {
-      W_prop    <- t(apply(ymu, 1, normbetapropdist, Sigma = mh_scale * Sigma))
-      log_q_old <- apply(cbind(ymu, W), 1, normbetaloglike, Sigma = mh_scale * Sigma)
-      log_q_new <- apply(cbind(ymu, W_prop), 1, normbetaloglike, Sigma = mh_scale * Sigma)
+      mh_update_output    <- mh_update_cpp(W, Y, Mu, mh_scale * Sigma)   # from c++ optimzations
+      W_prop    <- mh_update_output$W_new
+      log_q_old <- mh_update_output$log_q_old
+      log_q_new <- mh_update_output$log_q_new
     }
     expW   <- rowSums(exp(W)); expWp <- rowSums(exp(W_prop))
     ll_old <- rowSums(Y[,1:d] * W[,1:d]) - rowSums(Y * log1p(expW)) -
@@ -319,13 +319,13 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
     S1 <- (S1 + t(S1)) / 2
     diag(S1) <- diag(S1) + 1e-8
 
-    Wish1scale <- solve(S1)
+    Wish1scale <- chol2inv(chol(S1))
     Wish1scale <- (Wish1scale + t(Wish1scale)) / 2
     diag(Wish1scale) <- diag(Wish1scale) + 1e-8
 
-    Phi   <- solve(rWishart(1,
+    Phi   <- chol2inv(chol(rWishart(1,
                             df    = prior_settings$nu_P + m,
-                            Sigma = Wish1scale)[,,1])
+                            Sigma = Wish1scale)[,,1]))
 
     # update beta
     R     <- W - Z %*% psi
@@ -347,13 +347,13 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
     S2 <- (S2 + t(S2)) / 2
     diag(S2) <- diag(S2) + 1e-8
 
-    Wish2scale <- solve(S2)
+    Wish2scale <- chol2inv(chol(S2))
     Wish2scale <- (Wish2scale + t(Wish2scale)) / 2
     diag(Wish2scale) <- diag(Wish2scale) + 1e-8
 
-    Sigma <- solve(rWishart(1,
+    Sigma <- chol2inv(chol(rWishart(1,
                             df    = prior_settings$nu_S + N,
-                            Sigma = Wish2scale)[,,1])
+                            Sigma = Wish2scale)[,,1]))
     Sigma_inv <- chol2inv(chol(Sigma))
 
     # save samples
