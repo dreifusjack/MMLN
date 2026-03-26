@@ -1,5 +1,4 @@
 // [[Rcpp::depends(RcppArmadillo)]]
-// [[Rcpp::plugins(openmp)]]
 #include <RcppArmadillo.h> // for matrix/vector types
 
 // NOTE: OpenMP is not configured yet
