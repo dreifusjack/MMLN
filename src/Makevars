@@ -1,4 +1,4 @@
 # Eigen 3.3.x SSE/SIMD headers under GCC 13+ emit [-Wignored-attributes] warnings.
 # These are suppressed per-file via #pragma GCC diagnostic in each .cpp file.
 # Remove those pragmas once RcppEigen ships Eigen >= 3.4 on CRAN.
-PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS)
