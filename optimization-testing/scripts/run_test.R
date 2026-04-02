@@ -59,6 +59,40 @@ erase_up <- function(n) {
   for (i in seq_len(n)) cat("\033[A\033[2K")
 }
 
+# Helper: run a function with a spinner (Unix) or simple message (Windows)
+run_with_spinner <- function(expr_fn, label = "Computing MDres residuals") {
+  if (.Platform$OS.type == "unix") {
+    job <- parallel::mcparallel(expr_fn())
+    frames <- c("|", "/", "-", "\\")
+    i <- 0
+    start <- Sys.time()
+    result <- NULL
+    while (TRUE) {
+      collected <- parallel::mccollect(job, wait = FALSE, timeout = 0.15)
+      if (!is.null(collected)) {
+        result <- collected[[1]]
+        break
+      }
+      i <- i + 1
+      elapsed <- as.numeric(difftime(Sys.time(), start, units = "secs"))
+      cat(sprintf("\r  %s %s [%s]", label, frames[(i %% 4) + 1], fmt_time(elapsed)))
+      flush.console()
+    }
+    elapsed <- round(as.numeric(difftime(Sys.time(), start, units = "secs")), 1)
+    cat(sprintf("\r  %s done (%5.1fs)%s\n", label, elapsed, strrep(" ", 10)))
+    flush.console()
+    result
+  } else {
+    cat(sprintf("  %s...\n", label))
+    flush.console()
+    start <- Sys.time()
+    result <- expr_fn()
+    elapsed <- round(as.numeric(difftime(Sys.time(), start, units = "secs")), 1)
+    cat(sprintf("  %s done (%5.1fs)\n", label, elapsed))
+    result
+  }
+}
+
 # ---------------------------------------------------------------------------
 # FMLN and MMLN
 # ---------------------------------------------------------------------------
@@ -173,40 +207,28 @@ if (run_mdres) {
       sigma_hat <- mmln_fix$sigma_chain[[n_saved]]
       psi_hat   <- mmln_fix$psi_chain[[n_saved]]
 
-      # Generate P posterior predictive datasets with progress bar
-      n_steps <- MDRES_P + 1  # P replicates + 1 MDres call
-      pb <- txtProgressBar(min = 0, max = n_steps, style = 3)
-      set.seed(sc$seed + 3000 + match(prop, PROPOSALS))
-      Y_pred_list <- vector("list", MDRES_P)
-      for (j in seq_len(MDRES_P)) {
-        Y_pred_list[[j]] <- sample_posterior_predictive(
-          X = dat$X, beta = beta_hat, Sigma = sigma_hat,
-          n = n_counts, Z = dat$Z, psi = psi_hat,
-          mixed = TRUE, verbose = FALSE
-        )
-        setTxtProgressBar(pb, j)
-        elapsed_sec <- as.numeric(difftime(Sys.time(), start, units = "secs"))
-        eta_sec <- elapsed_sec / j * (n_steps - j)
-        cat(sprintf("\r ETA: %s", fmt_time(eta_sec)))
-        flush.console()
-      }
+      # Generate posterior predictive datasets + run MDres (spinner shows progress)
+      mdres_result <- run_with_spinner(function() {
+        set.seed(sc$seed + 3000 + match(prop, PROPOSALS))
+        Y_pred_list <- vector("list", MDRES_P)
+        for (j in seq_len(MDRES_P)) {
+          Y_pred_list[[j]] <- sample_posterior_predictive(
+            X = dat$X, beta = beta_hat, Sigma = sigma_hat,
+            n = n_counts, Z = dat$Z, psi = psi_hat,
+            mixed = TRUE, verbose = FALSE
+          )
+        }
+        set.seed(sc$seed + 4000 + match(prop, PROPOSALS))
+        list(Y_pred_list = Y_pred_list, mdres = MDres(dat$Y, Y_pred_list))
+      })
 
-      # Run MDres with same seed as reference
-      set.seed(sc$seed + 4000 + match(prop, PROPOSALS))
-      mdres_out <- MDres(dat$Y, Y_pred_list)
-      setTxtProgressBar(pb, n_steps)
-      cat(sprintf("\r ETA: %s", fmt_time(0)))
-      flush.console()
-      close(pb)
-
-      saveRDS(
-        list(Y_pred_list = Y_pred_list, mdres = mdres_out),
+      saveRDS(mdres_result,
         file = file.path(res_dir, paste0("mdres_", name, "_", prop, ".rds"))
       )
 
       elapsed <- round(as.numeric(difftime(Sys.time(), start, units = "secs")), 1)
 
-      # Erase progress bar + header, print summary
+      # Erase spinner line + header, print summary
       erase_up(2)
       cat(sprintf("\r  [%2d/%d] %-20s %-10s  %5.1fs\n", mdres_num, mdres_total, name, prop, elapsed))
     }

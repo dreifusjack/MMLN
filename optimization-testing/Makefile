@@ -107,8 +107,9 @@ reference: ## Install upstream and generate reference fixtures (use FUNC= and SC
 
 test: ## Run fork tests and compare (use FUNC= and SCENARIO= to filter)
 	@printf "$(BLUE)Installing fork MMLN (local)...$(NC)\n"
-	@Rscript -e "Rcpp::compileAttributes(\"$(REPO)\")" 2>/dev/null
-	@Rscript -e "devtools::install(\"$(REPO)\", force = TRUE, quiet = TRUE)"
+# 	@Rscript -e "Rcpp::compileAttributes(\"$(REPO)\")" 2>/dev/null
+# 	@Rscript -e "devtools::install(\"$(REPO)\", force = TRUE, quiet = TRUE)"
+	@Rscript -e "devtools::load_all(\"$(REPO)\")"
 	@printf "  $(GREEN)$(OK)$(NC) Fork installed\n\n"
 	@printf "$(BLUE)Running fork tests (FUNC=$(FUNC), SCENARIO=$(SCENARIO))...$(NC)\n"
 	@Rscript "$(SCRIPTS)/run_test.R" "$(REPO)" "$(FUNC)" "$(SCENARIO)"
