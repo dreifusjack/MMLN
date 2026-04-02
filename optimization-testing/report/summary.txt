@@ -1,0 +1,368 @@
+MMLN Optimization Test Report
+Generated: 2026-04-01 20:29:40.232953
+FUNC=mmln  SCENARIO=all
+
+      scenario proposal model          chain max_abs_diff max_rel_diff   tol
+      baseline normbeta  MMLN     beta_chain 1.300873e-01   1.99176250 1e-06
+      baseline normbeta  MMLN    sigma_chain 1.756312e-01   1.97374702 1e-06
+      baseline normbeta  MMLN        w_chain 3.503480e+00   1.99998333 1e-06
+      baseline normbeta  MMLN mhaccept_chain 4.050000e-02   0.13001605 1e-10
+      baseline normbeta  MMLN      phi_chain 7.512082e+03   1.99756568 1e-06
+      baseline normbeta  MMLN      psi_chain 6.485987e-01   0.65088604 1e-06
+      baseline     norm  MMLN     beta_chain 0.000000e+00   0.00000000 0e+00
+      baseline     norm  MMLN    sigma_chain 0.000000e+00   0.00000000 0e+00
+      baseline     norm  MMLN        w_chain 0.000000e+00   0.00000000 0e+00
+      baseline     norm  MMLN mhaccept_chain 0.000000e+00   0.00000000 0e+00
+      baseline     norm  MMLN      phi_chain 0.000000e+00   0.00000000 0e+00
+      baseline     norm  MMLN      psi_chain 0.000000e+00   0.00000000 0e+00
+      baseline     beta  MMLN     beta_chain 1.373647e-01   1.99929740 0e+00
+      baseline     beta  MMLN    sigma_chain 1.824747e-01   1.98615732 0e+00
+      baseline     beta  MMLN        w_chain 3.123733e+00   1.99998044 0e+00
+      baseline     beta  MMLN mhaccept_chain 5.200000e-02   0.16124031 0e+00
+      baseline     beta  MMLN      phi_chain 1.752936e+04   1.98876290 0e+00
+      baseline     beta  MMLN      psi_chain 6.648125e-01   1.53665305 0e+00
+   zero_counts normbeta  MMLN     beta_chain 3.824895e-01   1.99914279 1e-06
+   zero_counts normbeta  MMLN    sigma_chain 1.111545e+00   0.44319256 1e-06
+   zero_counts normbeta  MMLN        w_chain 1.074611e+01   1.99997876 1e-06
+   zero_counts normbeta  MMLN mhaccept_chain 1.600000e-02   0.80000000 1e-10
+   zero_counts normbeta  MMLN      phi_chain 3.234125e+03   1.99801959 1e-06
+   zero_counts normbeta  MMLN      psi_chain 1.739232e+00   1.99819867 1e-06
+   zero_counts     norm  MMLN     beta_chain 0.000000e+00   0.00000000 0e+00
+   zero_counts     norm  MMLN    sigma_chain 0.000000e+00   0.00000000 0e+00
+   zero_counts     norm  MMLN        w_chain 0.000000e+00   0.00000000 0e+00
+   zero_counts     norm  MMLN mhaccept_chain 0.000000e+00   0.00000000 0e+00
+   zero_counts     norm  MMLN      phi_chain 0.000000e+00   0.00000000 0e+00
+   zero_counts     norm  MMLN      psi_chain 0.000000e+00   0.00000000 0e+00
+   zero_counts     beta  MMLN     beta_chain 0.000000e+00   0.00000000 0e+00
+   zero_counts     beta  MMLN    sigma_chain 0.000000e+00   0.00000000 0e+00
+   zero_counts     beta  MMLN        w_chain 0.000000e+00   0.00000000 0e+00
+   zero_counts     beta  MMLN mhaccept_chain 0.000000e+00   0.00000000 0e+00
+   zero_counts     beta  MMLN      phi_chain 0.000000e+00   0.00000000 0e+00
+   zero_counts     beta  MMLN      psi_chain 0.000000e+00   0.00000000 0e+00
+   tiny_counts normbeta  MMLN     beta_chain 1.239973e+01   1.99719678 1e-06
+   tiny_counts normbeta  MMLN    sigma_chain 6.123342e+01   1.99677357 1e-06
+   tiny_counts normbeta  MMLN        w_chain 8.482434e+01   1.99999190 1e-06
+   tiny_counts normbeta  MMLN mhaccept_chain 1.683333e-01   0.57611940 1e-10
+   tiny_counts normbeta  MMLN      phi_chain 1.152056e+04   1.99710004 1e-06
+   tiny_counts normbeta  MMLN      psi_chain 1.002363e+00   1.57415619 1e-06
+   tiny_counts     norm  MMLN     beta_chain 0.000000e+00   0.00000000 0e+00
+   tiny_counts     norm  MMLN    sigma_chain 0.000000e+00   0.00000000 0e+00
+   tiny_counts     norm  MMLN        w_chain 0.000000e+00   0.00000000 0e+00
+   tiny_counts     norm  MMLN mhaccept_chain 0.000000e+00   0.00000000 0e+00
+   tiny_counts     norm  MMLN      phi_chain 0.000000e+00   0.00000000 0e+00
+   tiny_counts     norm  MMLN      psi_chain 0.000000e+00   0.00000000 0e+00
+   tiny_counts     beta  MMLN     beta_chain 5.274344e-02   0.45830740 0e+00
+   tiny_counts     beta  MMLN    sigma_chain 2.956559e-04   1.99982949 0e+00
+   tiny_counts     beta  MMLN        w_chain 3.980556e-01   1.99973349 0e+00
+   tiny_counts     beta  MMLN mhaccept_chain 6.750000e-02   0.15311909 0e+00
+   tiny_counts     beta  MMLN      phi_chain 4.032763e+03   1.99369997 0e+00
+   tiny_counts     beta  MMLN      psi_chain 2.270764e-01   1.99168186 0e+00
+  large_counts normbeta  MMLN     beta_chain 6.567406e-02   1.96019392 1e-06
+  large_counts normbeta  MMLN    sigma_chain 1.266938e-01   1.99251631 1e-06
+  large_counts normbeta  MMLN        w_chain 9.204950e-01   1.98982744 1e-06
+  large_counts normbeta  MMLN mhaccept_chain 4.750000e-02   0.13725490 1e-10
+  large_counts normbeta  MMLN      phi_chain 4.052871e+02   1.96676232 1e-06
+  large_counts normbeta  MMLN      psi_chain 2.825080e-01   0.77781162 1e-06
+  large_counts     norm  MMLN     beta_chain 0.000000e+00   0.00000000 0e+00
+  large_counts     norm  MMLN    sigma_chain 0.000000e+00   0.00000000 0e+00
+  large_counts     norm  MMLN        w_chain 0.000000e+00   0.00000000 0e+00
+  large_counts     norm  MMLN mhaccept_chain 0.000000e+00   0.00000000 0e+00
+  large_counts     norm  MMLN      phi_chain 0.000000e+00   0.00000000 0e+00
+  large_counts     norm  MMLN      psi_chain 0.000000e+00   0.00000000 0e+00
+  large_counts     beta  MMLN     beta_chain 1.321370e-01   1.86935994 0e+00
+  large_counts     beta  MMLN    sigma_chain 1.092797e-01   1.96964179 0e+00
+  large_counts     beta  MMLN        w_chain 8.408400e-01   1.99984481 0e+00
+  large_counts     beta  MMLN mhaccept_chain 3.833333e-02   0.11616162 0e+00
+  large_counts     beta  MMLN      phi_chain 9.686817e+01   1.96236171 0e+00
+  large_counts     beta  MMLN      psi_chain 4.249109e-01   1.52680625 0e+00
+      high_dim normbeta  MMLN     beta_chain 2.162457e-01   1.99896627 1e-06
+      high_dim normbeta  MMLN    sigma_chain 3.513591e-01   1.19768097 1e-06
+      high_dim normbeta  MMLN        w_chain 4.853664e+00   1.99998796 1e-06
+      high_dim normbeta  MMLN mhaccept_chain 2.833333e-02   0.44615385 1e-10
+      high_dim normbeta  MMLN      phi_chain 1.242539e+04   1.99978845 1e-06
+      high_dim normbeta  MMLN      psi_chain 9.965752e-01   1.99941924 1e-06
+      high_dim     norm  MMLN     beta_chain 0.000000e+00   0.00000000 0e+00
+      high_dim     norm  MMLN    sigma_chain 0.000000e+00   0.00000000 0e+00
+      high_dim     norm  MMLN        w_chain 0.000000e+00   0.00000000 0e+00
+      high_dim     norm  MMLN mhaccept_chain 0.000000e+00   0.00000000 0e+00
+      high_dim     norm  MMLN      phi_chain 0.000000e+00   0.00000000 0e+00
+      high_dim     norm  MMLN      psi_chain 0.000000e+00   0.00000000 0e+00
+      high_dim     beta  MMLN     beta_chain 1.570397e-01   1.99879093 0e+00
+      high_dim     beta  MMLN    sigma_chain 2.098901e-01   1.64380268 0e+00
+      high_dim     beta  MMLN        w_chain 3.425929e+00   1.99998617 0e+00
+      high_dim     beta  MMLN mhaccept_chain 2.833333e-02   0.40277778 0e+00
+      high_dim     beta  MMLN      phi_chain 1.304055e+04   1.99884718 0e+00
+      high_dim     beta  MMLN      psi_chain 7.356719e-01   1.99928657 0e+00
+ near_singular normbeta  MMLN     beta_chain 1.445120e-01   1.99660963 1e-06
+ near_singular normbeta  MMLN    sigma_chain 1.673101e-01   0.16498548 1e-06
+ near_singular normbeta  MMLN        w_chain 2.020958e+00   1.99998197 1e-06
+ near_singular normbeta  MMLN mhaccept_chain 4.928571e-02   0.25650558 1e-10
+ near_singular normbeta  MMLN      phi_chain 7.706709e+04   1.98277132 1e-06
+ near_singular normbeta  MMLN      psi_chain 5.948216e-01   0.58668875 1e-06
+ near_singular     norm  MMLN     beta_chain 0.000000e+00   0.00000000 0e+00
+ near_singular     norm  MMLN    sigma_chain 0.000000e+00   0.00000000 0e+00
+ near_singular     norm  MMLN        w_chain 0.000000e+00   0.00000000 0e+00
+ near_singular     norm  MMLN mhaccept_chain 0.000000e+00   0.00000000 0e+00
+ near_singular     norm  MMLN      phi_chain 0.000000e+00   0.00000000 0e+00
+ near_singular     norm  MMLN      psi_chain 0.000000e+00   0.00000000 0e+00
+ near_singular     beta  MMLN     beta_chain 1.481963e-01   1.99370650 0e+00
+ near_singular     beta  MMLN    sigma_chain 2.031563e-01   0.18169848 0e+00
+ near_singular     beta  MMLN        w_chain 1.713899e+00   1.99994902 0e+00
+ near_singular     beta  MMLN mhaccept_chain 4.857143e-02   0.24727273 0e+00
+ near_singular     beta  MMLN      phi_chain 3.472648e+06   1.97803236 0e+00
+ near_singular     beta  MMLN      psi_chain 1.047434e+00   0.58863091 0e+00
+   large_coefs normbeta  MMLN     beta_chain 3.006114e+00   0.95926552 1e-06
+   large_coefs normbeta  MMLN    sigma_chain 3.067370e+01   0.65701380 1e-06
+   large_coefs normbeta  MMLN        w_chain 5.650834e+01   1.99927118 1e-06
+   large_coefs normbeta  MMLN mhaccept_chain 2.500000e-02   0.44444444 1e-10
+   large_coefs normbeta  MMLN      phi_chain 2.246751e+04   1.99931732 1e-06
+   large_coefs normbeta  MMLN      psi_chain 3.619773e+00   1.97520059 1e-06
+   large_coefs     norm  MMLN     beta_chain 0.000000e+00   0.00000000 0e+00
+   large_coefs     norm  MMLN    sigma_chain 0.000000e+00   0.00000000 0e+00
+   large_coefs     norm  MMLN        w_chain 0.000000e+00   0.00000000 0e+00
+   large_coefs     norm  MMLN mhaccept_chain 0.000000e+00   0.00000000 0e+00
+   large_coefs     norm  MMLN      phi_chain 0.000000e+00   0.00000000 0e+00
+   large_coefs     norm  MMLN      psi_chain 0.000000e+00   0.00000000 0e+00
+   large_coefs     beta  MMLN     beta_chain 2.271133e+01   1.99760632 0e+00
+   large_coefs     beta  MMLN    sigma_chain 3.015722e+03   0.63387342 0e+00
+   large_coefs     beta  MMLN        w_chain 7.204930e+02   1.97036103 0e+00
+   large_coefs     beta  MMLN mhaccept_chain 5.750000e-02   0.07675195 0e+00
+   large_coefs     beta  MMLN      phi_chain 7.416660e+04   1.97783633 0e+00
+   large_coefs     beta  MMLN      psi_chain 6.754302e+01   1.98101367 0e+00
+    unbalanced normbeta  MMLN     beta_chain 1.157519e-01   1.99406675 1e-06
+    unbalanced normbeta  MMLN    sigma_chain 1.635984e-01   1.92152232 1e-06
+    unbalanced normbeta  MMLN        w_chain 3.329772e+00   1.99997906 1e-06
+    unbalanced normbeta  MMLN mhaccept_chain 4.644656e-02   0.14928058 1e-10
+    unbalanced normbeta  MMLN      phi_chain 3.260248e+04   1.99319584 1e-06
+    unbalanced normbeta  MMLN      psi_chain 4.469922e+00   1.98190822 1e-06
+    unbalanced     norm  MMLN     beta_chain 0.000000e+00   0.00000000 0e+00
+    unbalanced     norm  MMLN    sigma_chain 0.000000e+00   0.00000000 0e+00
+    unbalanced     norm  MMLN        w_chain 0.000000e+00   0.00000000 0e+00
+    unbalanced     norm  MMLN mhaccept_chain 0.000000e+00   0.00000000 0e+00
+    unbalanced     norm  MMLN      phi_chain 0.000000e+00   0.00000000 0e+00
+    unbalanced     norm  MMLN      psi_chain 0.000000e+00   0.00000000 0e+00
+    unbalanced     beta  MMLN     beta_chain 1.331079e-01   1.94607289 0e+00
+    unbalanced     beta  MMLN    sigma_chain 1.623064e-01   1.87797441 0e+00
+    unbalanced     beta  MMLN        w_chain 2.981148e+00   1.99999817 0e+00
+    unbalanced     beta  MMLN mhaccept_chain 3.917180e-02   0.12110727 0e+00
+    unbalanced     beta  MMLN      phi_chain 2.168636e+04   1.98225391 0e+00
+    unbalanced     beta  MMLN      psi_chain 3.542478e+00   1.98639251 0e+00
+   many_groups normbeta  MMLN     beta_chain 1.387386e-01   1.99000538 1e-06
+   many_groups normbeta  MMLN    sigma_chain 1.424046e-01   1.99742011 1e-06
+   many_groups normbeta  MMLN        w_chain 4.023417e+00   1.99999621 1e-06
+   many_groups normbeta  MMLN mhaccept_chain 4.850000e-02   0.10407725 1e-10
+   many_groups normbeta  MMLN      phi_chain 4.795326e+05   1.98405744 1e-06
+   many_groups normbeta  MMLN      psi_chain 1.839423e+00   1.94094391 1e-06
+   many_groups     norm  MMLN     beta_chain 0.000000e+00   0.00000000 0e+00
+   many_groups     norm  MMLN    sigma_chain 0.000000e+00   0.00000000 0e+00
+   many_groups     norm  MMLN        w_chain 0.000000e+00   0.00000000 0e+00
+   many_groups     norm  MMLN mhaccept_chain 0.000000e+00   0.00000000 0e+00
+   many_groups     norm  MMLN      phi_chain 0.000000e+00   0.00000000 0e+00
+   many_groups     norm  MMLN      psi_chain 0.000000e+00   0.00000000 0e+00
+   many_groups     beta  MMLN     beta_chain 1.138775e-01   1.99666566 0e+00
+   many_groups     beta  MMLN    sigma_chain 1.463248e-01   1.88926795 0e+00
+   many_groups     beta  MMLN        w_chain 3.300199e+00   1.99997399 0e+00
+   many_groups     beta  MMLN mhaccept_chain 5.150000e-02   0.11016043 0e+00
+   many_groups     beta  MMLN      phi_chain 6.901617e+05   1.99114446 0e+00
+   many_groups     beta  MMLN      psi_chain 2.286936e+00   1.98458957 0e+00
+  dominant_cat normbeta  MMLN     beta_chain 8.372635e-02   1.99639299 1e-06
+  dominant_cat normbeta  MMLN    sigma_chain 6.619132e-02   1.99523317 1e-06
+  dominant_cat normbeta  MMLN        w_chain 1.396944e+00   0.43394430 1e-06
+  dominant_cat normbeta  MMLN mhaccept_chain 6.666667e-02   0.12232416 1e-10
+  dominant_cat normbeta  MMLN      phi_chain 1.661627e+05   0.99947934 1e-06
+  dominant_cat normbeta  MMLN      psi_chain 1.601914e-01   0.06755374 1e-06
+  dominant_cat     norm  MMLN     beta_chain 0.000000e+00   0.00000000 0e+00
+  dominant_cat     norm  MMLN    sigma_chain 0.000000e+00   0.00000000 0e+00
+  dominant_cat     norm  MMLN        w_chain 0.000000e+00   0.00000000 0e+00
+  dominant_cat     norm  MMLN mhaccept_chain 0.000000e+00   0.00000000 0e+00
+  dominant_cat     norm  MMLN      phi_chain 0.000000e+00   0.00000000 0e+00
+  dominant_cat     norm  MMLN      psi_chain 0.000000e+00   0.00000000 0e+00
+  dominant_cat     beta  MMLN     beta_chain 7.966372e-02   1.99765941 0e+00
+  dominant_cat     beta  MMLN    sigma_chain 4.844119e-02   1.99921830 0e+00
+  dominant_cat     beta  MMLN        w_chain 1.337444e+00   0.40372892 0e+00
+  dominant_cat     beta  MMLN mhaccept_chain 6.250000e-02   0.11544715 0e+00
+  dominant_cat     beta  MMLN      phi_chain 3.025838e+04   0.99830304 0e+00
+  dominant_cat     beta  MMLN      psi_chain 2.797717e-01   0.11394215 0e+00
+  pass
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+  TRUE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+ FALSE
+
+Overall: FAILURES DETECTED
