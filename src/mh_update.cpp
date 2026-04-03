@@ -24,8 +24,6 @@ static inline void normbeta_params(
 {
     double exp_mu = std::exp(mu_i);
     double alpha = (1.0 + exp_mu) / sigma_ii - exp_mu / (1.0 + exp_mu);
-    if (alpha < 1e-3) // safety floor preventing numerical blowup
-        alpha = 1e-3;
     double beta_val = alpha * std::exp(-mu_i);
     double a_star = y_i + alpha;
     double b_star = y_ref + beta_val;

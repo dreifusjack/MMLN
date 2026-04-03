@@ -2,4 +2,6 @@
 #' @importFrom graphics plot abline par
 #' @importFrom mvnfast rmvn
 #' @importFrom utils txtProgressBar setTxtProgressBar flush.console
+#' @importFrom Rcpp sourceCpp
+#' @useDynLib MMLN, .registration = TRUE
 NULL

@@ -20,16 +20,16 @@
 //   4. Armadillo Cholesky MVN sampler for psi draws.
 
 //' compute_psi_moments_cpp: Return posterior M_j and V_j for each group.
-
+//'
 //' Deterministic test helper. No random draws. Use this to verify the C++
 //' posterior mean and covariance match the R reference to 1e-8.
-
+//'
 //' @param group_idx List of 0-based integer vectors from build_group_idx
 //' @param R_tot     N x d residual matrix: W - X %*% beta
 //' @param Phi       d x d random intercept covariance
 //' @param Sigma_inv d x d inverse within-group covariance
 //' @return List with M (list of d-vectors) and V (list of d x d matrices)
-
+//' @export
 // [[Rcpp::export]]
 Rcpp::List compute_psi_moments_cpp(
     const Rcpp::List& group_idx,
@@ -78,7 +78,7 @@ static arma::rowvec rmvn_chol(const arma::vec& mu, const arma::mat& Sigma) {
 //'
 //' @param Z  N x m group indicator matrix
 //' @return List of integer vectors, one per group, with 0-based row indices
-//'
+//' @export
 // [[Rcpp::export]]
 Rcpp::List build_group_idx(const arma::mat& Z) {
   int m = Z.n_cols;
@@ -92,6 +92,7 @@ Rcpp::List build_group_idx(const arma::mat& Z) {
 }
 
 //' update_psi_cpp: Update random intercepts for all m groups.
+//'
 //' Call build_group_idx once before the MCMC loop and pass group_idx here.
 //' Uses Eigen LLT for Phi_inv. Uses Armadillo inv_sympd for V_j inside
 //' the loop to avoid Arma/Eigen round-trip copies per group.
@@ -101,7 +102,7 @@ Rcpp::List build_group_idx(const arma::mat& Z) {
 //' @param Phi       d x d random intercept covariance
 //' @param Sigma_inv d x d inverse within-group covariance
 //' @return m x d matrix of updated random intercepts (psi)
-
+//' @export
 // [[Rcpp::export]]
 arma::mat update_psi_cpp(
     const Rcpp::List& group_idx,
