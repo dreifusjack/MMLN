@@ -106,45 +106,41 @@ Rcpp::NumericVector mdres_core_cpp(
         // replaces R: Sigma_all[[i]] <- cov(t(pred_array[i,,]))
         arma::mat S = arma::cov(samp); // d x d
 
-        // // If predictive samples are degenerate (e.g. all-zero counts that
-        // // produce NaN after log-ratio transform), the covariance will contain
-        // // NaN/Inf. Skip these observations and return NA.
-        // if (!S.is_finite())
-        // {
-        //     z_resids[i] = NA_REAL;
-        //     ++n_singular;
-        //     continue;
-        // }
+        // Match upstream R: any(is.na(Sig)) → singular
+        if (!S.is_finite())
+        {
+            z_resids[i] = NA_REAL;
+            ++n_singular;
+            continue;
+        }
 
-        // // arma::cov can produce tiny asymmetries from floating-point
-        // // rounding, which makes eig_sym() reject the matrix. Force
-        // // exact symmetry: S = (S + S^T) / 2
-        // S = (S + S.t()) / 2.0;
+        // arma::cov can produce tiny asymmetries from floating-point
+        // rounding, which makes eig_sym() reject the matrix. Force
+        // exact symmetry: S = (S + S^T) / 2
+        S = (S + S.t()) / 2.0;
 
-        // singularity check: count obs where min eigenvalue < 1e-8
+        // Match upstream R: any(eigen(Sig)$values < 1e-8) → singular
+        // R returns NA without calling runif(), so we must also skip
+        // to keep the RNG stream in sync.
         const arma::vec ev = arma::eig_sym(S);
         if (ev.min() < 1e-8)
         {
+            z_resids[i] = NA_REAL;
             ++n_singular;
+            continue;
         }
-
-        // diagonal jitter for numerical stability before Cholesky
-        S.diag() += 1e-8;
 
         // map S into Eigen (arma and Eigen both use column-major; zero copy)
         const Eigen::MatrixXd S_eig =
             Eigen::Map<const Eigen::MatrixXd>(S.memptr(), d, d);
 
         // Cholesky factorization: S = L L^T
-        // replaces R: solve(Sigma_all[[i]]) and chol2inv(chol(...))
+        // replaces R: apply(obsi, 1, mahalanobis, center=mu, cov=S)
         Eigen::LLT<Eigen::MatrixXd> llt(S_eig);
         if (llt.info() != Eigen::Success)
         {
-            Rcpp::warning(
-                "LLT decomposition failed for observation %d; "
-                "result set to NA.",
-                i + 1);
             z_resids[i] = NA_REAL;
+            ++n_singular;
             continue;
         }
 
@@ -248,8 +244,7 @@ Rcpp::NumericVector mdres_core_cpp(
     if (n_singular > 0)
     {
         Rcpp::warning(
-            "Covariance matrix near-singular (min eigenvalue < 1e-8) for "
-            "%d observation(s); 1e-8 diagonal jitter was applied.",
+            "Covariance matrix singular for %d observation(s); results may be unreliable.",
             n_singular);
     }
 
