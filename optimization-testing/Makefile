@@ -16,7 +16,7 @@ else
 endif
 .SHELLFLAGS := -euo pipefail -c
 
-.PHONY: help generate-data reference test compare clean clean-all
+.PHONY: help generate-data clone-upstream reference test compare clean clean-all clean-upstream
 
 # Colors for output
 GREEN  := \033[0;32m
@@ -39,6 +39,7 @@ FIX_DIR  := $(CURDIR)/fixtures
 RES_DIR  := $(CURDIR)/results
 REP_DIR  := $(CURDIR)/report
 REPO     := $(CURDIR)/..
+UPSTREAM := $(CURDIR)/upstream
 
 help: ## Show available commands
 	@printf "$(CYAN)====================================================\n$(NC)"
@@ -49,12 +50,14 @@ help: ## Show available commands
 	@printf "  $(GREEN)%-25s$(NC) %s\n" "test"      "Run fork tests and compare (use FUNC= and SCENARIO= to filter)"
 	@printf "  $(GREEN)%-25s$(NC) %s\n" "compare"   "Re-run comparison only (no model runs)"
 	@printf "  $(GREEN)%-25s$(NC) %s\n" "clean"     "Remove fork results and reports (keep fixtures and data)"
+	@printf "  $(GREEN)%-25s$(NC) %s\n" "clean-upstream" "Remove the local upstream/ clone"
 	@printf "\n$(YELLOW)  Variables:$(NC)\n"
 	@printf "    FUNC=fmln|mmln|mdres|all    Function to test (default: all)\n"
 	@printf "    SCENARIO=name|\"n1 n2\"|all   Scenario(s) to test (default: all)\n"
 	@printf "\n$(YELLOW)  Setup (generally one-time commands)$(NC)\n\n"
+	@printf "  $(GREEN)%-25s$(NC) %s\n" "clone-upstream" "Clone upstream MMLN into upstream/ for local editing"
 	@printf "  $(GREEN)%-25s$(NC) %s\n" "generate-data" "Generate synthetic test datasets (no package install needed)"
-	@printf "  $(GREEN)%-25s$(NC) %s\n" "reference"     "Install upstream and generate reference fixtures"
+	@printf "  $(GREEN)%-25s$(NC) %s\n" "reference"     "Install upstream from local copy and generate reference fixtures"
 	@printf "  $(GREEN)%-25s$(NC) %s\n" "clean-all"     "Remove everything (including fixtures and data)"
 	@printf "\n$(YELLOW)  Scenarios (all baseball-scale, N~1200-2000, n_iter=1000):$(NC)\n"
 	@printf "    $(GREEN)baseline$(NC)        MLB-mirrored (N=2000, m=50, p=10, d=3)\n"
@@ -97,9 +100,10 @@ generate-data: ## Generate synthetic test datasets (no package install needed)
 	@Rscript "$(SCRIPTS)/generate_data.R" "$(REPO)"
 	@printf "  $(GREEN)$(OK)$(NC) Datasets saved to data/\n\n"
 
-reference: ## Install upstream and generate reference fixtures (use FUNC= and SCENARIO= to filter)
-	@printf "$(BLUE)Installing upstream MMLN (eaegerber/MMLN)...$(NC)\n"
-	@Rscript -e 'devtools::install_github("eaegerber/MMLN", force = TRUE, quiet = TRUE)'
+reference: ## Install upstream from local copy and generate reference fixtures (use FUNC= and SCENARIO= to filter)
+	@printf "$(BLUE)Installing upstream MMLN from upstream/...$(NC)\n"
+	@Rscript -e 'Rcpp::compileAttributes("$(UPSTREAM)")'
+	@Rscript -e 'devtools::install("$(UPSTREAM)", force = TRUE, quiet = TRUE)'
 	@printf "  $(GREEN)$(OK)$(NC) Upstream installed\n\n"
 	@printf "$(BLUE)Generating reference fixtures (FUNC=$(FUNC), SCENARIO=$(SCENARIO))...$(NC)\n"
 	@Rscript "$(SCRIPTS)/generate_reference.R" "$(REPO)" "$(FUNC)" "$(SCENARIO)"
@@ -107,9 +111,8 @@ reference: ## Install upstream and generate reference fixtures (use FUNC= and SC
 
 test: ## Run fork tests and compare (use FUNC= and SCENARIO= to filter)
 	@printf "$(BLUE)Installing fork MMLN (local)...$(NC)\n"
-# 	@Rscript -e "Rcpp::compileAttributes(\"$(REPO)\")" 2>/dev/null
-# 	@Rscript -e "devtools::install(\"$(REPO)\", force = TRUE, quiet = TRUE)"
-	@Rscript -e "devtools::load_all(\"$(REPO)\")"
+	@Rscript -e 'Rcpp::compileAttributes("$(REPO)")'
+	@Rscript -e 'devtools::install("$(REPO)", force = TRUE, quiet = TRUE)'
 	@printf "  $(GREEN)$(OK)$(NC) Fork installed\n\n"
 	@printf "$(BLUE)Running fork tests (FUNC=$(FUNC), SCENARIO=$(SCENARIO))...$(NC)\n"
 	@Rscript "$(SCRIPTS)/run_test.R" "$(REPO)" "$(FUNC)" "$(SCENARIO)"
@@ -129,3 +132,8 @@ clean-all: clean ## Remove everything (including fixtures and data)
 	@printf "$(YELLOW)Cleaning fixtures and data...$(NC)\n"
 	@rm -rf "$(FIX_DIR)"/* "$(DATA_DIR)"/*
 	@printf "  $(GREEN)$(OK)$(NC) Cleaned fixtures/ and data/\n\n"
+
+clean-upstream: ## Remove the local upstream/ clone
+	@printf "$(YELLOW)Removing upstream/ clone...$(NC)\n"
+	@rm -rf "$(UPSTREAM)"
+	@printf "  $(GREEN)$(OK)$(NC) Removed upstream/\n\n"
