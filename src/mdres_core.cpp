@@ -134,15 +134,11 @@ Rcpp::NumericVector mdres_core_cpp(
         const Eigen::MatrixXd S_eig =
             Eigen::Map<const Eigen::MatrixXd>(S.memptr(), d, d);
 
-        // Cholesky factorization: S = L L^T
-        // replaces R: apply(obsi, 1, mahalanobis, center=mu, cov=S)
-        Eigen::LLT<Eigen::MatrixXd> llt(S_eig);
-        if (llt.info() != Eigen::Success)
-        {
-            z_resids[i] = NA_REAL;
-            ++n_singular;
-            continue;
-        }
+        // Compute S_inv via LU (PartialPivLU), matching R's solve() used
+        // inside mahalanobis(). Cholesky (LLT) gives slightly different
+        // results on borderline-singular matrices, desynchronizing the
+        // ECDF quantile and runif draw.
+        const Eigen::MatrixXd S_inv = S_eig.partialPivLu().inverse();
 
         // column means of predictive samples
         // replaces R: mu_all <- apply(pred_array, 1:2, mean)
@@ -157,9 +153,6 @@ Rcpp::NumericVector mdres_core_cpp(
         // build centered (P+1) x d matrix:
         //   row 0     = alr_obs[i,] - mu   (the observed point)
         //   rows 1..P = samp - mu           (the posterior predictive points)
-        //
-        // the .rowwise() broadcast replaces R sweep(pred_array, 2, mu)
-        // no intermediate matrix allocated
         Eigen::MatrixXd centered(P + 1, d);
         for (int j = 0; j < d; ++j)
         {
@@ -167,17 +160,13 @@ Rcpp::NumericVector mdres_core_cpp(
         }
         centered.bottomRows(P).noalias() = samp_eig.rowwise() - mu_eig;
 
-        // row-wise Mahalanobis distances via a single triangular solve:
-        //   md_j = || L^{-1} centered_j ||^2
-        //
-        // solve L * Z = centered^T  ->  Z is d x (P+1)
-        // then squared column norms give the Mahalanobis distances
-        // Eigen expression template avoids intermediate allocation
-        //
-        // replaces R: apply(obsi, 1, mahalanobis, center = mu, cov = S)
-        const Eigen::MatrixXd Z =
-            llt.matrixL().solve(centered.transpose());
-        const Eigen::RowVectorXd mds = Z.colwise().squaredNorm(); // 1 x (P+1)
+        // row-wise Mahalanobis distances: md_j = centered_j^T * S_inv * centered_j
+        // matches R: mahalanobis(x, center, cov) which uses solve(cov, x - center)
+        Eigen::RowVectorXd mds(P + 1);
+        for (int r = 0; r < P + 1; ++r)
+        {
+            mds(r) = centered.row(r) * S_inv * centered.row(r).transpose();
+        }
 
         const double obs_md = mds(0);
 
