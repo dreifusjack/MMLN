@@ -127,9 +127,6 @@ Rcpp::NumericVector mdres_core_cpp(
             continue;
         }
 
-        // diagonal jitter for numerical stability before Cholesky
-        S.diag() += 1e-8;
-
         // map S into Eigen (arma and Eigen both use column-major; zero copy)
         const Eigen::MatrixXd S_eig =
             Eigen::Map<const Eigen::MatrixXd>(S.memptr(), d, d);
