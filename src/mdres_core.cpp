@@ -127,14 +127,12 @@ Rcpp::NumericVector mdres_core_cpp(
             continue;
         }
 
-        // map S into Eigen (arma and Eigen both use column-major; zero copy)
-        const Eigen::MatrixXd S_eig =
-            Eigen::Map<const Eigen::MatrixXd>(S.memptr(), d, d);
-
-        // Cholesky factorization: S = L L^T
-        // replaces R: solve(Sigma_all[[i]]) and chol2inv(chol(...))
-        Eigen::LLT<Eigen::MatrixXd> llt(S_eig);
-        if (llt.info() != Eigen::Success)
+        // Invert S via arma::inv() which uses LAPACK dgetrf/dgetri,
+        // matching R's solve(cov) which uses LAPACK dgesv.
+        // Eigen's LLT/PartialPivLU use different implementations that
+        // produce slightly different results on ill-conditioned matrices.
+        arma::mat S_inv;
+        if (!arma::inv(S_inv, S))
         {
             z_resids[i] = NA_REAL;
             ++n_singular;
@@ -145,28 +143,20 @@ Rcpp::NumericVector mdres_core_cpp(
         // replaces R: mu_all <- apply(pred_array, 1:2, mean)
         const arma::rowvec mu = arma::mean(samp, 0); // 1 x d
 
-        // map samp and mu into Eigen views (zero copy)
-        const Eigen::MatrixXd samp_eig =
-            Eigen::Map<const Eigen::MatrixXd>(samp.memptr(), P, d);
-        const Eigen::RowVectorXd mu_eig =
-            Eigen::Map<const Eigen::RowVectorXd>(mu.memptr(), d);
-
         // build centered (P+1) x d matrix:
         //   row 0     = alr_obs[i,] - mu   (the observed point)
         //   rows 1..P = samp - mu           (the posterior predictive points)
-        Eigen::MatrixXd centered(P + 1, d);
-        for (int j = 0; j < d; ++j)
+        arma::mat centered(P + 1, d);
+        centered.row(0) = alr_obs.row(i) - mu;
+        for (int k = 0; k < P; ++k)
         {
-            centered(0, j) = alr_obs(i, j) - mu(j);
+            centered.row(k + 1) = samp.row(k) - mu;
         }
-        centered.bottomRows(P).noalias() = samp_eig.rowwise() - mu_eig;
 
-        // row-wise Mahalanobis distances via triangular solve:
-        //   md_j = || L^{-1} centered_j ||^2
-        // replaces R: apply(obsi, 1, mahalanobis, center = mu, cov = S)
-        const Eigen::MatrixXd Z =
-            llt.matrixL().solve(centered.transpose());
-        const Eigen::RowVectorXd mds = Z.colwise().squaredNorm(); // 1 x (P+1)
+        // row-wise Mahalanobis: md_j = rowSums((centered %*% S_inv) * centered)
+        // matches R: rowSums(x %*% solve(cov) * x) inside mahalanobis()
+        const arma::mat tmp = centered * S_inv;
+        const arma::vec mds = arma::sum(tmp % centered, 1); // (P+1) x 1
 
         const double obs_md = mds(0);
 
