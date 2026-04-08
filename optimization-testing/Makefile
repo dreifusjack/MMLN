@@ -76,11 +76,19 @@ help: ## Show available commands
 	@printf "    make test FUNC=mmln SCENARIO=\"baseline zero_counts\"\n"
 	@printf "\n"
 
-check-deps: ## Check required R packages are installed
+check-deps: ## Check required dependencies (system + R packages)
 	@printf "$(BLUE)Checking dependencies...$(NC)\n\n"
+	@printf "$(YELLOW)  System tools:$(NC)\n"
 	@command -v Rscript >/dev/null 2>&1 && \
 		printf "  $(GREEN)$(OK)$(NC) Rscript:     $$(Rscript --version 2>&1 | head -1)\n" || \
-		printf "  $(RED)$(FAIL)$(NC) Rscript:     Not found\n"
+		printf "  $(RED)$(FAIL)$(NC) Rscript:     Not found (sudo apt-get install r-base)\n"
+	@command -v g++ >/dev/null 2>&1 && \
+		printf "  $(GREEN)$(OK)$(NC) g++:         $$(g++ --version 2>&1 | head -1)\n" || \
+		printf "  $(RED)$(FAIL)$(NC) g++:         Not found (sudo apt-get install build-essential)\n"
+	@command -v make >/dev/null 2>&1 && \
+		printf "  $(GREEN)$(OK)$(NC) make:        $$(make --version 2>&1 | head -1)\n" || \
+		printf "  $(RED)$(FAIL)$(NC) make:        Not found (sudo apt-get install build-essential)\n"
+	@printf "\n$(YELLOW)  R packages:$(NC)\n"
 	@Rscript -e 'if (requireNamespace("devtools", quietly=TRUE)) cat("  ok\n") else cat("  missing\n")' 2>/dev/null | \
 		grep -q "ok" && \
 		printf "  $(GREEN)$(OK)$(NC) devtools\n" || \
@@ -93,6 +101,14 @@ check-deps: ## Check required R packages are installed
 		grep -q "ok" && \
 		printf "  $(GREEN)$(OK)$(NC) Rcpp\n" || \
 		printf "  $(RED)$(FAIL)$(NC) Rcpp         (install.packages('Rcpp'))\n"
+	@Rscript -e 'if (requireNamespace("RcppArmadillo", quietly=TRUE)) cat("  ok\n") else cat("  missing\n")' 2>/dev/null | \
+		grep -q "ok" && \
+		printf "  $(GREEN)$(OK)$(NC) RcppArmadillo\n" || \
+		printf "  $(RED)$(FAIL)$(NC) RcppArmadillo (install.packages('RcppArmadillo'))\n"
+	@Rscript -e 'if (requireNamespace("RcppEigen", quietly=TRUE)) cat("  ok\n") else cat("  missing\n")' 2>/dev/null | \
+		grep -q "ok" && \
+		printf "  $(GREEN)$(OK)$(NC) RcppEigen\n" || \
+		printf "  $(RED)$(FAIL)$(NC) RcppEigen    (install.packages('RcppEigen'))\n"
 	@printf "\n"
 
 generate-data: ## Generate synthetic test datasets (no package install needed)
