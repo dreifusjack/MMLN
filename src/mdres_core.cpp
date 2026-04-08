@@ -114,14 +114,11 @@ Rcpp::NumericVector mdres_core_cpp(
             continue;
         }
 
-        // arma::cov can produce tiny asymmetries from floating-point
-        // rounding, which makes eig_sym() reject the matrix. Force
-        // exact symmetry: S = (S + S^T) / 2
-        S = (S + S.t()) / 2.0;
-
-        // Match upstream R: any(eigen(Sig)$values < 1e-8) → singular
-        // R returns NA without calling runif(), so we must also skip
-        // to keep the RNG stream in sync.
+        // Match upstream R: any(eigen(Sig, symmetric=TRUE)$values < 1e-8) → singular
+        // Both R's eigen(symmetric=TRUE) and arma::eig_sym use LAPACK dsyev which
+        // only reads the lower triangle — no explicit symmetrization needed.
+        // R returns NA without calling runif(), so we must also skip to keep
+        // the RNG stream in sync.
         const arma::vec ev = arma::eig_sym(S);
         if (ev.min() < 1e-8)
         {
@@ -130,15 +127,22 @@ Rcpp::NumericVector mdres_core_cpp(
             continue;
         }
 
+        // diagonal jitter for numerical stability before Cholesky
+        S.diag() += 1e-8;
+
         // map S into Eigen (arma and Eigen both use column-major; zero copy)
         const Eigen::MatrixXd S_eig =
             Eigen::Map<const Eigen::MatrixXd>(S.memptr(), d, d);
 
-        // Compute S_inv via LU (PartialPivLU), matching R's solve() used
-        // inside mahalanobis(). Cholesky (LLT) gives slightly different
-        // results on borderline-singular matrices, desynchronizing the
-        // ECDF quantile and runif draw.
-        const Eigen::MatrixXd S_inv = S_eig.partialPivLu().inverse();
+        // Cholesky factorization: S = L L^T
+        // replaces R: solve(Sigma_all[[i]]) and chol2inv(chol(...))
+        Eigen::LLT<Eigen::MatrixXd> llt(S_eig);
+        if (llt.info() != Eigen::Success)
+        {
+            z_resids[i] = NA_REAL;
+            ++n_singular;
+            continue;
+        }
 
         // column means of predictive samples
         // replaces R: mu_all <- apply(pred_array, 1:2, mean)
@@ -160,13 +164,12 @@ Rcpp::NumericVector mdres_core_cpp(
         }
         centered.bottomRows(P).noalias() = samp_eig.rowwise() - mu_eig;
 
-        // row-wise Mahalanobis distances: md_j = centered_j^T * S_inv * centered_j
-        // matches R: mahalanobis(x, center, cov) which uses solve(cov, x - center)
-        Eigen::RowVectorXd mds(P + 1);
-        for (int r = 0; r < P + 1; ++r)
-        {
-            mds(r) = centered.row(r) * S_inv * centered.row(r).transpose();
-        }
+        // row-wise Mahalanobis distances via triangular solve:
+        //   md_j = || L^{-1} centered_j ||^2
+        // replaces R: apply(obsi, 1, mahalanobis, center = mu, cov = S)
+        const Eigen::MatrixXd Z =
+            llt.matrixL().solve(centered.transpose());
+        const Eigen::RowVectorXd mds = Z.colwise().squaredNorm(); // 1 x (P+1)
 
         const double obs_md = mds(0);
 
