@@ -88,6 +88,9 @@ check-deps: ## Check required dependencies (system + R packages)
 	@command -v make >/dev/null 2>&1 && \
 		printf "  $(GREEN)$(OK)$(NC) make:        $$(make --version 2>&1 | head -1)\n" || \
 		printf "  $(RED)$(FAIL)$(NC) make:        Not found (sudo apt-get install build-essential)\n"
+	@command -v cmake >/dev/null 2>&1 && \
+		printf "  $(GREEN)$(OK)$(NC) cmake:       $$(cmake --version 2>&1 | head -1)\n" || \
+		printf "  $(RED)$(FAIL)$(NC) cmake:       Not found (sudo apt-get install cmake)\n"
 	@printf "\n$(YELLOW)  R packages:$(NC)\n"
 	@Rscript -e 'if (requireNamespace("devtools", quietly=TRUE)) cat("  ok\n") else cat("  missing\n")' 2>/dev/null | \
 		grep -q "ok" && \
