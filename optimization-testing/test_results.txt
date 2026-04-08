@@ -1,726 +1,383 @@
 MMLN Optimization Test Report
 
-      scenario proposal model          chain max_abs_diff max_rel_diff   tol
-      baseline normbeta  FMLN     beta_chain    0.0000000            0 1e-06
-      baseline normbeta  FMLN    sigma_chain    0.0000000            0 1e-06
-      baseline normbeta  FMLN        w_chain    0.0000000            0 1e-06
-      baseline normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10
-      baseline     norm  FMLN     beta_chain    0.0000000            0 0e+00
-      baseline     norm  FMLN    sigma_chain    0.0000000            0 0e+00
-      baseline     norm  FMLN        w_chain    0.0000000            0 0e+00
-      baseline     norm  FMLN mhaccept_chain    0.0000000            0 0e+00
-      baseline     beta  FMLN     beta_chain    0.0000000            0 0e+00
-      baseline     beta  FMLN    sigma_chain    0.0000000            0 0e+00
-      baseline     beta  FMLN        w_chain    0.0000000            0 0e+00
-      baseline     beta  FMLN mhaccept_chain    0.0000000            0 0e+00
-      baseline normbeta  MMLN     beta_chain    0.0000000            0 1e-06
-      baseline normbeta  MMLN    sigma_chain    0.0000000            0 1e-06
-      baseline normbeta  MMLN        w_chain    0.0000000            0 1e-06
-      baseline normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10
-      baseline normbeta  MMLN      phi_chain    0.0000000            0 1e-06
-      baseline normbeta  MMLN      psi_chain    0.0000000            0 1e-06
-      baseline     norm  MMLN     beta_chain    0.0000000            0 0e+00
-      baseline     norm  MMLN    sigma_chain    0.0000000            0 0e+00
-      baseline     norm  MMLN        w_chain    0.0000000            0 0e+00
-      baseline     norm  MMLN mhaccept_chain    0.0000000            0 0e+00
-      baseline     norm  MMLN      phi_chain    0.0000000            0 0e+00
-      baseline     norm  MMLN      psi_chain    0.0000000            0 0e+00
-      baseline     beta  MMLN     beta_chain    0.0000000            0 0e+00
-      baseline     beta  MMLN    sigma_chain    0.0000000            0 0e+00
-      baseline     beta  MMLN        w_chain    0.0000000            0 0e+00
-      baseline     beta  MMLN mhaccept_chain    0.0000000            0 0e+00
-      baseline     beta  MMLN      phi_chain    0.0000000            0 0e+00
-      baseline     beta  MMLN      psi_chain    0.0000000            0 0e+00
-   zero_counts normbeta  FMLN     beta_chain    0.0000000            0 1e-06
-   zero_counts normbeta  FMLN    sigma_chain    0.0000000            0 1e-06
-   zero_counts normbeta  FMLN        w_chain    0.0000000            0 1e-06
-   zero_counts normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10
-   zero_counts     norm  FMLN     beta_chain    0.0000000            0 0e+00
-   zero_counts     norm  FMLN    sigma_chain    0.0000000            0 0e+00
-   zero_counts     norm  FMLN        w_chain    0.0000000            0 0e+00
-   zero_counts     norm  FMLN mhaccept_chain    0.0000000            0 0e+00
-   zero_counts     beta  FMLN     beta_chain    0.0000000            0 0e+00
-   zero_counts     beta  FMLN    sigma_chain    0.0000000            0 0e+00
-   zero_counts     beta  FMLN        w_chain    0.0000000            0 0e+00
-   zero_counts     beta  FMLN mhaccept_chain    0.0000000            0 0e+00
-   zero_counts normbeta  MMLN     beta_chain    0.0000000            0 1e-06
-   zero_counts normbeta  MMLN    sigma_chain    0.0000000            0 1e-06
-   zero_counts normbeta  MMLN        w_chain    0.0000000            0 1e-06
-   zero_counts normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10
-   zero_counts normbeta  MMLN      phi_chain    0.0000000            0 1e-06
-   zero_counts normbeta  MMLN      psi_chain    0.0000000            0 1e-06
-   zero_counts     norm  MMLN     beta_chain    0.0000000            0 0e+00
-   zero_counts     norm  MMLN    sigma_chain    0.0000000            0 0e+00
-   zero_counts     norm  MMLN        w_chain    0.0000000            0 0e+00
-   zero_counts     norm  MMLN mhaccept_chain    0.0000000            0 0e+00
-   zero_counts     norm  MMLN      phi_chain    0.0000000            0 0e+00
-   zero_counts     norm  MMLN      psi_chain    0.0000000            0 0e+00
-   zero_counts     beta  MMLN     beta_chain    0.0000000            0 0e+00
-   zero_counts     beta  MMLN    sigma_chain    0.0000000            0 0e+00
-   zero_counts     beta  MMLN        w_chain    0.0000000            0 0e+00
-   zero_counts     beta  MMLN mhaccept_chain    0.0000000            0 0e+00
-   zero_counts     beta  MMLN      phi_chain    0.0000000            0 0e+00
-   zero_counts     beta  MMLN      psi_chain    0.0000000            0 0e+00
-   tiny_counts normbeta  FMLN     beta_chain    0.0000000            0 1e-06
-   tiny_counts normbeta  FMLN    sigma_chain    0.0000000            0 1e-06
-   tiny_counts normbeta  FMLN        w_chain    0.0000000            0 1e-06
-   tiny_counts normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10
-   tiny_counts     norm  FMLN     beta_chain    0.0000000            0 0e+00
-   tiny_counts     norm  FMLN    sigma_chain    0.0000000            0 0e+00
-   tiny_counts     norm  FMLN        w_chain    0.0000000            0 0e+00
-   tiny_counts     norm  FMLN mhaccept_chain    0.0000000            0 0e+00
-   tiny_counts     beta  FMLN     beta_chain    0.0000000            0 0e+00
-   tiny_counts     beta  FMLN    sigma_chain    0.0000000            0 0e+00
-   tiny_counts     beta  FMLN        w_chain    0.0000000            0 0e+00
-   tiny_counts     beta  FMLN mhaccept_chain    0.0000000            0 0e+00
-   tiny_counts normbeta  MMLN     beta_chain    0.0000000            0 1e-06
-   tiny_counts normbeta  MMLN    sigma_chain    0.0000000            0 1e-06
-   tiny_counts normbeta  MMLN        w_chain    0.0000000            0 1e-06
-   tiny_counts normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10
-   tiny_counts normbeta  MMLN      phi_chain    0.0000000            0 1e-06
-   tiny_counts normbeta  MMLN      psi_chain    0.0000000            0 1e-06
-   tiny_counts     norm  MMLN     beta_chain    0.0000000            0 0e+00
-   tiny_counts     norm  MMLN    sigma_chain    0.0000000            0 0e+00
-   tiny_counts     norm  MMLN        w_chain    0.0000000            0 0e+00
-   tiny_counts     norm  MMLN mhaccept_chain    0.0000000            0 0e+00
-   tiny_counts     norm  MMLN      phi_chain    0.0000000            0 0e+00
-   tiny_counts     norm  MMLN      psi_chain    0.0000000            0 0e+00
-   tiny_counts     beta  MMLN     beta_chain    0.0000000            0 0e+00
-   tiny_counts     beta  MMLN    sigma_chain    0.0000000            0 0e+00
-   tiny_counts     beta  MMLN        w_chain    0.0000000            0 0e+00
-   tiny_counts     beta  MMLN mhaccept_chain    0.0000000            0 0e+00
-   tiny_counts     beta  MMLN      phi_chain    0.0000000            0 0e+00
-   tiny_counts     beta  MMLN      psi_chain    0.0000000            0 0e+00
-  large_counts normbeta  FMLN     beta_chain    0.0000000            0 1e-06
-  large_counts normbeta  FMLN    sigma_chain    0.0000000            0 1e-06
-  large_counts normbeta  FMLN        w_chain    0.0000000            0 1e-06
-  large_counts normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10
-  large_counts     norm  FMLN     beta_chain    0.0000000            0 0e+00
-  large_counts     norm  FMLN    sigma_chain    0.0000000            0 0e+00
-  large_counts     norm  FMLN        w_chain    0.0000000            0 0e+00
-  large_counts     norm  FMLN mhaccept_chain    0.0000000            0 0e+00
-  large_counts     beta  FMLN     beta_chain    0.0000000            0 0e+00
-  large_counts     beta  FMLN    sigma_chain    0.0000000            0 0e+00
-  large_counts     beta  FMLN        w_chain    0.0000000            0 0e+00
-  large_counts     beta  FMLN mhaccept_chain    0.0000000            0 0e+00
-  large_counts normbeta  MMLN     beta_chain    0.0000000            0 1e-06
-  large_counts normbeta  MMLN    sigma_chain    0.0000000            0 1e-06
-  large_counts normbeta  MMLN        w_chain    0.0000000            0 1e-06
-  large_counts normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10
-  large_counts normbeta  MMLN      phi_chain    0.0000000            0 1e-06
-  large_counts normbeta  MMLN      psi_chain    0.0000000            0 1e-06
-  large_counts     norm  MMLN     beta_chain    0.0000000            0 0e+00
-  large_counts     norm  MMLN    sigma_chain    0.0000000            0 0e+00
-  large_counts     norm  MMLN        w_chain    0.0000000            0 0e+00
-  large_counts     norm  MMLN mhaccept_chain    0.0000000            0 0e+00
-  large_counts     norm  MMLN      phi_chain    0.0000000            0 0e+00
-  large_counts     norm  MMLN      psi_chain    0.0000000            0 0e+00
-  large_counts     beta  MMLN     beta_chain    0.0000000            0 0e+00
-  large_counts     beta  MMLN    sigma_chain    0.0000000            0 0e+00
-  large_counts     beta  MMLN        w_chain    0.0000000            0 0e+00
-  large_counts     beta  MMLN mhaccept_chain    0.0000000            0 0e+00
-  large_counts     beta  MMLN      phi_chain    0.0000000            0 0e+00
-  large_counts     beta  MMLN      psi_chain    0.0000000            0 0e+00
-      high_dim normbeta  FMLN     beta_chain    0.0000000            0 1e-06
-      high_dim normbeta  FMLN    sigma_chain    0.0000000            0 1e-06
-      high_dim normbeta  FMLN        w_chain    0.0000000            0 1e-06
-      high_dim normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10
-      high_dim     norm  FMLN     beta_chain    0.0000000            0 0e+00
-      high_dim     norm  FMLN    sigma_chain    0.0000000            0 0e+00
-      high_dim     norm  FMLN        w_chain    0.0000000            0 0e+00
-      high_dim     norm  FMLN mhaccept_chain    0.0000000            0 0e+00
-      high_dim     beta  FMLN     beta_chain    0.0000000            0 0e+00
-      high_dim     beta  FMLN    sigma_chain    0.0000000            0 0e+00
-      high_dim     beta  FMLN        w_chain    0.0000000            0 0e+00
-      high_dim     beta  FMLN mhaccept_chain    0.0000000            0 0e+00
-      high_dim normbeta  MMLN     beta_chain    0.0000000            0 1e-06
-      high_dim normbeta  MMLN    sigma_chain    0.0000000            0 1e-06
-      high_dim normbeta  MMLN        w_chain    0.0000000            0 1e-06
-      high_dim normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10
-      high_dim normbeta  MMLN      phi_chain    0.0000000            0 1e-06
-      high_dim normbeta  MMLN      psi_chain    0.0000000            0 1e-06
-      high_dim     norm  MMLN     beta_chain    0.0000000            0 0e+00
-      high_dim     norm  MMLN    sigma_chain    0.0000000            0 0e+00
-      high_dim     norm  MMLN        w_chain    0.0000000            0 0e+00
-      high_dim     norm  MMLN mhaccept_chain    0.0000000            0 0e+00
-      high_dim     norm  MMLN      phi_chain    0.0000000            0 0e+00
-      high_dim     norm  MMLN      psi_chain    0.0000000            0 0e+00
-      high_dim     beta  MMLN     beta_chain    0.0000000            0 0e+00
-      high_dim     beta  MMLN    sigma_chain    0.0000000            0 0e+00
-      high_dim     beta  MMLN        w_chain    0.0000000            0 0e+00
-      high_dim     beta  MMLN mhaccept_chain    0.0000000            0 0e+00
-      high_dim     beta  MMLN      phi_chain    0.0000000            0 0e+00
-      high_dim     beta  MMLN      psi_chain    0.0000000            0 0e+00
- near_singular normbeta  FMLN     beta_chain    0.0000000            0 1e-06
- near_singular normbeta  FMLN    sigma_chain    0.0000000            0 1e-06
- near_singular normbeta  FMLN        w_chain    0.0000000            0 1e-06
- near_singular normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10
- near_singular     norm  FMLN     beta_chain    0.0000000            0 0e+00
- near_singular     norm  FMLN    sigma_chain    0.0000000            0 0e+00
- near_singular     norm  FMLN        w_chain    0.0000000            0 0e+00
- near_singular     norm  FMLN mhaccept_chain    0.0000000            0 0e+00
- near_singular     beta  FMLN     beta_chain    0.0000000            0 0e+00
- near_singular     beta  FMLN    sigma_chain    0.0000000            0 0e+00
- near_singular     beta  FMLN        w_chain    0.0000000            0 0e+00
- near_singular     beta  FMLN mhaccept_chain    0.0000000            0 0e+00
- near_singular normbeta  MMLN     beta_chain    0.0000000            0 1e-06
- near_singular normbeta  MMLN    sigma_chain    0.0000000            0 1e-06
- near_singular normbeta  MMLN        w_chain    0.0000000            0 1e-06
- near_singular normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10
- near_singular normbeta  MMLN      phi_chain    0.0000000            0 1e-06
- near_singular normbeta  MMLN      psi_chain    0.0000000            0 1e-06
- near_singular     norm  MMLN     beta_chain    0.0000000            0 0e+00
- near_singular     norm  MMLN    sigma_chain    0.0000000            0 0e+00
- near_singular     norm  MMLN        w_chain    0.0000000            0 0e+00
- near_singular     norm  MMLN mhaccept_chain    0.0000000            0 0e+00
- near_singular     norm  MMLN      phi_chain    0.0000000            0 0e+00
- near_singular     norm  MMLN      psi_chain    0.0000000            0 0e+00
- near_singular     beta  MMLN     beta_chain    0.0000000            0 0e+00
- near_singular     beta  MMLN    sigma_chain    0.0000000            0 0e+00
- near_singular     beta  MMLN        w_chain    0.0000000            0 0e+00
- near_singular     beta  MMLN mhaccept_chain    0.0000000            0 0e+00
- near_singular     beta  MMLN      phi_chain    0.0000000            0 0e+00
- near_singular     beta  MMLN      psi_chain    0.0000000            0 0e+00
-   large_coefs normbeta  FMLN     beta_chain    0.0000000            0 1e-06
-   large_coefs normbeta  FMLN    sigma_chain    0.0000000            0 1e-06
-   large_coefs normbeta  FMLN        w_chain    0.0000000            0 1e-06
-   large_coefs normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10
-   large_coefs     norm  FMLN     beta_chain    0.0000000            0 0e+00
-   large_coefs     norm  FMLN    sigma_chain    0.0000000            0 0e+00
-   large_coefs     norm  FMLN        w_chain    0.0000000            0 0e+00
-   large_coefs     norm  FMLN mhaccept_chain    0.0000000            0 0e+00
-   large_coefs     beta  FMLN     beta_chain    0.0000000            0 0e+00
-   large_coefs     beta  FMLN    sigma_chain    0.0000000            0 0e+00
-   large_coefs     beta  FMLN        w_chain    0.0000000            0 0e+00
-   large_coefs     beta  FMLN mhaccept_chain    0.0000000            0 0e+00
-   large_coefs normbeta  MMLN     beta_chain    0.0000000            0 1e-06
-   large_coefs normbeta  MMLN    sigma_chain    0.0000000            0 1e-06
-   large_coefs normbeta  MMLN        w_chain    0.0000000            0 1e-06
-   large_coefs normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10
-   large_coefs normbeta  MMLN      phi_chain    0.0000000            0 1e-06
-   large_coefs normbeta  MMLN      psi_chain    0.0000000            0 1e-06
-   large_coefs     norm  MMLN     beta_chain    0.0000000            0 0e+00
-   large_coefs     norm  MMLN    sigma_chain    0.0000000            0 0e+00
-   large_coefs     norm  MMLN        w_chain    0.0000000            0 0e+00
-   large_coefs     norm  MMLN mhaccept_chain    0.0000000            0 0e+00
-   large_coefs     norm  MMLN      phi_chain    0.0000000            0 0e+00
-   large_coefs     norm  MMLN      psi_chain    0.0000000            0 0e+00
-   large_coefs     beta  MMLN     beta_chain    0.0000000            0 0e+00
-   large_coefs     beta  MMLN    sigma_chain    0.0000000            0 0e+00
-   large_coefs     beta  MMLN        w_chain    0.0000000            0 0e+00
-   large_coefs     beta  MMLN mhaccept_chain    0.0000000            0 0e+00
-   large_coefs     beta  MMLN      phi_chain    0.0000000            0 0e+00
-   large_coefs     beta  MMLN      psi_chain    0.0000000            0 0e+00
-    unbalanced normbeta  FMLN     beta_chain    0.0000000            0 1e-06
-    unbalanced normbeta  FMLN    sigma_chain    0.0000000            0 1e-06
-    unbalanced normbeta  FMLN        w_chain    0.0000000            0 1e-06
-    unbalanced normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10
-    unbalanced     norm  FMLN     beta_chain    0.0000000            0 0e+00
-    unbalanced     norm  FMLN    sigma_chain    0.0000000            0 0e+00
-    unbalanced     norm  FMLN        w_chain    0.0000000            0 0e+00
-    unbalanced     norm  FMLN mhaccept_chain    0.0000000            0 0e+00
-    unbalanced     beta  FMLN     beta_chain    0.0000000            0 0e+00
-    unbalanced     beta  FMLN    sigma_chain    0.0000000            0 0e+00
-    unbalanced     beta  FMLN        w_chain    0.0000000            0 0e+00
-    unbalanced     beta  FMLN mhaccept_chain    0.0000000            0 0e+00
-    unbalanced normbeta  MMLN     beta_chain    0.0000000            0 1e-06
-    unbalanced normbeta  MMLN    sigma_chain    0.0000000            0 1e-06
-    unbalanced normbeta  MMLN        w_chain    0.0000000            0 1e-06
-    unbalanced normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10
-    unbalanced normbeta  MMLN      phi_chain    0.0000000            0 1e-06
-    unbalanced normbeta  MMLN      psi_chain    0.0000000            0 1e-06
-    unbalanced     norm  MMLN     beta_chain    0.0000000            0 0e+00
-    unbalanced     norm  MMLN    sigma_chain    0.0000000            0 0e+00
-    unbalanced     norm  MMLN        w_chain    0.0000000            0 0e+00
-    unbalanced     norm  MMLN mhaccept_chain    0.0000000            0 0e+00
-    unbalanced     norm  MMLN      phi_chain    0.0000000            0 0e+00
-    unbalanced     norm  MMLN      psi_chain    0.0000000            0 0e+00
-    unbalanced     beta  MMLN     beta_chain    0.0000000            0 0e+00
-    unbalanced     beta  MMLN    sigma_chain    0.0000000            0 0e+00
-    unbalanced     beta  MMLN        w_chain    0.0000000            0 0e+00
-    unbalanced     beta  MMLN mhaccept_chain    0.0000000            0 0e+00
-    unbalanced     beta  MMLN      phi_chain    0.0000000            0 0e+00
-    unbalanced     beta  MMLN      psi_chain    0.0000000            0 0e+00
-   many_groups normbeta  FMLN     beta_chain    0.0000000            0 1e-06
-   many_groups normbeta  FMLN    sigma_chain    0.0000000            0 1e-06
-   many_groups normbeta  FMLN        w_chain    0.0000000            0 1e-06
-   many_groups normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10
-   many_groups     norm  FMLN     beta_chain    0.0000000            0 0e+00
-   many_groups     norm  FMLN    sigma_chain    0.0000000            0 0e+00
-   many_groups     norm  FMLN        w_chain    0.0000000            0 0e+00
-   many_groups     norm  FMLN mhaccept_chain    0.0000000            0 0e+00
-   many_groups     beta  FMLN     beta_chain    0.0000000            0 0e+00
-   many_groups     beta  FMLN    sigma_chain    0.0000000            0 0e+00
-   many_groups     beta  FMLN        w_chain    0.0000000            0 0e+00
-   many_groups     beta  FMLN mhaccept_chain    0.0000000            0 0e+00
-   many_groups normbeta  MMLN     beta_chain    0.0000000            0 1e-06
-   many_groups normbeta  MMLN    sigma_chain    0.0000000            0 1e-06
-   many_groups normbeta  MMLN        w_chain    0.0000000            0 1e-06
-   many_groups normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10
-   many_groups normbeta  MMLN      phi_chain    0.0000000            0 1e-06
-   many_groups normbeta  MMLN      psi_chain    0.0000000            0 1e-06
-   many_groups     norm  MMLN     beta_chain    0.0000000            0 0e+00
-   many_groups     norm  MMLN    sigma_chain    0.0000000            0 0e+00
-   many_groups     norm  MMLN        w_chain    0.0000000            0 0e+00
-   many_groups     norm  MMLN mhaccept_chain    0.0000000            0 0e+00
-   many_groups     norm  MMLN      phi_chain    0.0000000            0 0e+00
-   many_groups     norm  MMLN      psi_chain    0.0000000            0 0e+00
-   many_groups     beta  MMLN     beta_chain    0.0000000            0 0e+00
-   many_groups     beta  MMLN    sigma_chain    0.0000000            0 0e+00
-   many_groups     beta  MMLN        w_chain    0.0000000            0 0e+00
-   many_groups     beta  MMLN mhaccept_chain    0.0000000            0 0e+00
-   many_groups     beta  MMLN      phi_chain    0.0000000            0 0e+00
-   many_groups     beta  MMLN      psi_chain    0.0000000            0 0e+00
-  dominant_cat normbeta  FMLN     beta_chain    0.0000000            0 1e-06
-  dominant_cat normbeta  FMLN    sigma_chain    0.0000000            0 1e-06
-  dominant_cat normbeta  FMLN        w_chain    0.0000000            0 1e-06
-  dominant_cat normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10
-  dominant_cat     norm  FMLN     beta_chain    0.0000000            0 0e+00
-  dominant_cat     norm  FMLN    sigma_chain    0.0000000            0 0e+00
-  dominant_cat     norm  FMLN        w_chain    0.0000000            0 0e+00
-  dominant_cat     norm  FMLN mhaccept_chain    0.0000000            0 0e+00
-  dominant_cat     beta  FMLN     beta_chain    0.0000000            0 0e+00
-  dominant_cat     beta  FMLN    sigma_chain    0.0000000            0 0e+00
-  dominant_cat     beta  FMLN        w_chain    0.0000000            0 0e+00
-  dominant_cat     beta  FMLN mhaccept_chain    0.0000000            0 0e+00
-  dominant_cat normbeta  MMLN     beta_chain    0.0000000            0 1e-06
-  dominant_cat normbeta  MMLN    sigma_chain    0.0000000            0 1e-06
-  dominant_cat normbeta  MMLN        w_chain    0.0000000            0 1e-06
-  dominant_cat normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10
-  dominant_cat normbeta  MMLN      phi_chain    0.0000000            0 1e-06
-  dominant_cat normbeta  MMLN      psi_chain    0.0000000            0 1e-06
-  dominant_cat     norm  MMLN     beta_chain    0.0000000            0 0e+00
-  dominant_cat     norm  MMLN    sigma_chain    0.0000000            0 0e+00
-  dominant_cat     norm  MMLN        w_chain    0.0000000            0 0e+00
-  dominant_cat     norm  MMLN mhaccept_chain    0.0000000            0 0e+00
-  dominant_cat     norm  MMLN      phi_chain    0.0000000            0 0e+00
-  dominant_cat     norm  MMLN      psi_chain    0.0000000            0 0e+00
-  dominant_cat     beta  MMLN     beta_chain    0.0000000            0 0e+00
-  dominant_cat     beta  MMLN    sigma_chain    0.0000000            0 0e+00
-  dominant_cat     beta  MMLN        w_chain    0.0000000            0 0e+00
-  dominant_cat     beta  MMLN mhaccept_chain    0.0000000            0 0e+00
-  dominant_cat     beta  MMLN      phi_chain    0.0000000            0 0e+00
-  dominant_cat     beta  MMLN      psi_chain    0.0000000            0 0e+00
-      baseline normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06
-      baseline normbeta MDRES      residuals    0.0000000           NA 1e-06
-      baseline     norm MDRES    Y_pred_list    0.0000000           NA 1e-06
-      baseline     norm MDRES      residuals    0.0000000           NA 1e-06
-      baseline     beta MDRES    Y_pred_list    0.0000000           NA 1e-06
-      baseline     beta MDRES      residuals    0.0000000           NA 1e-06
-   zero_counts normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06
-   zero_counts normbeta MDRES      residuals    0.0000000           NA 1e-06
-   zero_counts     norm MDRES    Y_pred_list    0.0000000           NA 1e-06
-   zero_counts     norm MDRES      residuals    0.0000000           NA 1e-06
-   zero_counts     beta MDRES    Y_pred_list    0.0000000           NA 1e-06
-   zero_counts     beta MDRES      residuals    0.0000000           NA 1e-06
-   tiny_counts normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06
-   tiny_counts normbeta MDRES      residuals    0.3424810           NA 1e-06
-   tiny_counts     norm MDRES    Y_pred_list    0.0000000           NA 1e-06
-   tiny_counts     norm MDRES      residuals    0.0000000           NA 1e-06
-   tiny_counts     beta MDRES    Y_pred_list    0.0000000           NA 1e-06
-   tiny_counts     beta MDRES      residuals    0.0000000           NA 1e-06
-  large_counts normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06
-  large_counts normbeta MDRES      residuals    0.0000000           NA 1e-06
-  large_counts     norm MDRES    Y_pred_list    0.0000000           NA 1e-06
-  large_counts     norm MDRES      residuals    0.0000000           NA 1e-06
-  large_counts     beta MDRES    Y_pred_list    0.0000000           NA 1e-06
-  large_counts     beta MDRES      residuals    0.0000000           NA 1e-06
-      high_dim normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06
-      high_dim normbeta MDRES      residuals    0.0000000           NA 1e-06
-      high_dim     norm MDRES    Y_pred_list    0.0000000           NA 1e-06
-      high_dim     norm MDRES      residuals    0.0000000           NA 1e-06
-      high_dim     beta MDRES    Y_pred_list    0.0000000           NA 1e-06
-      high_dim     beta MDRES      residuals    0.0000000           NA 1e-06
- near_singular normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06
- near_singular normbeta MDRES      residuals    0.0000000           NA 1e-06
- near_singular     norm MDRES    Y_pred_list    0.0000000           NA 1e-06
- near_singular     norm MDRES      residuals    0.0000000           NA 1e-06
- near_singular     beta MDRES    Y_pred_list    0.0000000           NA 1e-06
- near_singular     beta MDRES      residuals    0.0000000           NA 1e-06
-   large_coefs normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06
-   large_coefs normbeta MDRES      residuals    0.0000000           NA 1e-06
-   large_coefs     norm MDRES    Y_pred_list    0.0000000           NA 1e-06
-   large_coefs     norm MDRES      residuals    0.2799469           NA 1e-06
-   large_coefs     beta MDRES    Y_pred_list    0.0000000           NA 1e-06
-   large_coefs     beta MDRES      residuals    0.0000000           NA 1e-06
-    unbalanced normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06
-    unbalanced normbeta MDRES      residuals    0.0000000           NA 1e-06
-    unbalanced     norm MDRES    Y_pred_list    0.0000000           NA 1e-06
-    unbalanced     norm MDRES      residuals    0.0000000           NA 1e-06
-    unbalanced     beta MDRES    Y_pred_list    0.0000000           NA 1e-06
-    unbalanced     beta MDRES      residuals    0.0000000           NA 1e-06
-   many_groups normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06
-   many_groups normbeta MDRES      residuals    0.0000000           NA 1e-06
-   many_groups     norm MDRES    Y_pred_list    0.0000000           NA 1e-06
-   many_groups     norm MDRES      residuals    0.0000000           NA 1e-06
-   many_groups     beta MDRES    Y_pred_list    0.0000000           NA 1e-06
-   many_groups     beta MDRES      residuals    0.0000000           NA 1e-06
-  dominant_cat normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06
-  dominant_cat normbeta MDRES      residuals    0.0000000           NA 1e-06
-  dominant_cat     norm MDRES    Y_pred_list    0.0000000           NA 1e-06
-  dominant_cat     norm MDRES      residuals    0.0000000           NA 1e-06
-  dominant_cat     beta MDRES    Y_pred_list    0.0000000           NA 1e-06
-  dominant_cat     beta MDRES      residuals    0.0000000           NA 1e-06
-  pass
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
- FALSE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
- FALSE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
-  TRUE
+Scenarios (all baseball-scale, N~1200-2000, n_iter=1000):
+  baseline        MLB-mirrored (N=2000, m=50, p=10, d=3)
+  zero_counts     Many zero cells across 8 categories (N=1500, m=30, d=7, n_mean=10)
+  tiny_counts     Extreme ALR values, wide W variance (N=1200, m=40, d=3, n_mean=5)
+  large_counts    Precision in exp/log1p accumulates (N=1200, m=30, d=3, n_mean=5000)
+  high_dim        9 categories, 8x8 covariance (N=1200, m=30, p=8, d=8)
+  near_singular   Sigma/Phi with rho=0.92 (N=1400, m=40, d=4)
+  large_coefs     beta in [-4,4], exp(W) overflow risk (N=1200, m=30, p=8, d=3)
+  unbalanced      Group sizes 1-80, single-obs groups (N~2000, m=50, d=3)
+  many_groups     500 random intercepts like MLB players (N=2000, m=500, d=2)
+  dominant_cat    One category ~90% prob, ALR near -inf (N=1200, m=30, d=2)
 
-Overall: FAILURES DETECTED
+      scenario proposal model          chain max_abs_diff max_rel_diff   tol  pass
+      baseline normbeta  FMLN     beta_chain    0.0000000            0 1e-06  PASS
+      baseline normbeta  FMLN    sigma_chain    0.0000000            0 1e-06  PASS
+      baseline normbeta  FMLN        w_chain    0.0000000            0 1e-06  PASS
+      baseline normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+      baseline     norm  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+      baseline     norm  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+      baseline     norm  FMLN        w_chain    0.0000000            0 0e+00  PASS
+      baseline     norm  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+      baseline     beta  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+      baseline     beta  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+      baseline     beta  FMLN        w_chain    0.0000000            0 0e+00  PASS
+      baseline     beta  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+      baseline normbeta  MMLN     beta_chain    0.0000000            0 1e-06  PASS
+      baseline normbeta  MMLN    sigma_chain    0.0000000            0 1e-06  PASS
+      baseline normbeta  MMLN        w_chain    0.0000000            0 1e-06  PASS
+      baseline normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+      baseline normbeta  MMLN      phi_chain    0.0000000            0 1e-06  PASS
+      baseline normbeta  MMLN      psi_chain    0.0000000            0 1e-06  PASS
+      baseline     norm  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+      baseline     norm  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+      baseline     norm  MMLN        w_chain    0.0000000            0 0e+00  PASS
+      baseline     norm  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+      baseline     norm  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+      baseline     norm  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+      baseline     beta  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+      baseline     beta  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+      baseline     beta  MMLN        w_chain    0.0000000            0 0e+00  PASS
+      baseline     beta  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+      baseline     beta  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+      baseline     beta  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+   zero_counts normbeta  FMLN     beta_chain    0.0000000            0 1e-06  PASS
+   zero_counts normbeta  FMLN    sigma_chain    0.0000000            0 1e-06  PASS
+   zero_counts normbeta  FMLN        w_chain    0.0000000            0 1e-06  PASS
+   zero_counts normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+   zero_counts     norm  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+   zero_counts     norm  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+   zero_counts     norm  FMLN        w_chain    0.0000000            0 0e+00  PASS
+   zero_counts     norm  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+   zero_counts     beta  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+   zero_counts     beta  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+   zero_counts     beta  FMLN        w_chain    0.0000000            0 0e+00  PASS
+   zero_counts     beta  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+   zero_counts normbeta  MMLN     beta_chain    0.0000000            0 1e-06  PASS
+   zero_counts normbeta  MMLN    sigma_chain    0.0000000            0 1e-06  PASS
+   zero_counts normbeta  MMLN        w_chain    0.0000000            0 1e-06  PASS
+   zero_counts normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+   zero_counts normbeta  MMLN      phi_chain    0.0000000            0 1e-06  PASS
+   zero_counts normbeta  MMLN      psi_chain    0.0000000            0 1e-06  PASS
+   zero_counts     norm  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+   zero_counts     norm  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+   zero_counts     norm  MMLN        w_chain    0.0000000            0 0e+00  PASS
+   zero_counts     norm  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+   zero_counts     norm  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+   zero_counts     norm  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+   zero_counts     beta  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+   zero_counts     beta  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+   zero_counts     beta  MMLN        w_chain    0.0000000            0 0e+00  PASS
+   zero_counts     beta  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+   zero_counts     beta  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+   zero_counts     beta  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+   tiny_counts normbeta  FMLN     beta_chain    0.0000000            0 1e-06  PASS
+   tiny_counts normbeta  FMLN    sigma_chain    0.0000000            0 1e-06  PASS
+   tiny_counts normbeta  FMLN        w_chain    0.0000000            0 1e-06  PASS
+   tiny_counts normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+   tiny_counts     norm  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     norm  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     norm  FMLN        w_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     norm  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     beta  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     beta  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     beta  FMLN        w_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     beta  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+   tiny_counts normbeta  MMLN     beta_chain    0.0000000            0 1e-06  PASS
+   tiny_counts normbeta  MMLN    sigma_chain    0.0000000            0 1e-06  PASS
+   tiny_counts normbeta  MMLN        w_chain    0.0000000            0 1e-06  PASS
+   tiny_counts normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+   tiny_counts normbeta  MMLN      phi_chain    0.0000000            0 1e-06  PASS
+   tiny_counts normbeta  MMLN      psi_chain    0.0000000            0 1e-06  PASS
+   tiny_counts     norm  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     norm  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     norm  MMLN        w_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     norm  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     norm  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     norm  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     beta  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     beta  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     beta  MMLN        w_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     beta  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     beta  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+   tiny_counts     beta  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+  large_counts normbeta  FMLN     beta_chain    0.0000000            0 1e-06  PASS
+  large_counts normbeta  FMLN    sigma_chain    0.0000000            0 1e-06  PASS
+  large_counts normbeta  FMLN        w_chain    0.0000000            0 1e-06  PASS
+  large_counts normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+  large_counts     norm  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+  large_counts     norm  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+  large_counts     norm  FMLN        w_chain    0.0000000            0 0e+00  PASS
+  large_counts     norm  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+  large_counts     beta  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+  large_counts     beta  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+  large_counts     beta  FMLN        w_chain    0.0000000            0 0e+00  PASS
+  large_counts     beta  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+  large_counts normbeta  MMLN     beta_chain    0.0000000            0 1e-06  PASS
+  large_counts normbeta  MMLN    sigma_chain    0.0000000            0 1e-06  PASS
+  large_counts normbeta  MMLN        w_chain    0.0000000            0 1e-06  PASS
+  large_counts normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+  large_counts normbeta  MMLN      phi_chain    0.0000000            0 1e-06  PASS
+  large_counts normbeta  MMLN      psi_chain    0.0000000            0 1e-06  PASS
+  large_counts     norm  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+  large_counts     norm  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+  large_counts     norm  MMLN        w_chain    0.0000000            0 0e+00  PASS
+  large_counts     norm  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+  large_counts     norm  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+  large_counts     norm  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+  large_counts     beta  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+  large_counts     beta  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+  large_counts     beta  MMLN        w_chain    0.0000000            0 0e+00  PASS
+  large_counts     beta  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+  large_counts     beta  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+  large_counts     beta  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+      high_dim normbeta  FMLN     beta_chain    0.0000000            0 1e-06  PASS
+      high_dim normbeta  FMLN    sigma_chain    0.0000000            0 1e-06  PASS
+      high_dim normbeta  FMLN        w_chain    0.0000000            0 1e-06  PASS
+      high_dim normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+      high_dim     norm  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+      high_dim     norm  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+      high_dim     norm  FMLN        w_chain    0.0000000            0 0e+00  PASS
+      high_dim     norm  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+      high_dim     beta  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+      high_dim     beta  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+      high_dim     beta  FMLN        w_chain    0.0000000            0 0e+00  PASS
+      high_dim     beta  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+      high_dim normbeta  MMLN     beta_chain    0.0000000            0 1e-06  PASS
+      high_dim normbeta  MMLN    sigma_chain    0.0000000            0 1e-06  PASS
+      high_dim normbeta  MMLN        w_chain    0.0000000            0 1e-06  PASS
+      high_dim normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+      high_dim normbeta  MMLN      phi_chain    0.0000000            0 1e-06  PASS
+      high_dim normbeta  MMLN      psi_chain    0.0000000            0 1e-06  PASS
+      high_dim     norm  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+      high_dim     norm  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+      high_dim     norm  MMLN        w_chain    0.0000000            0 0e+00  PASS
+      high_dim     norm  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+      high_dim     norm  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+      high_dim     norm  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+      high_dim     beta  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+      high_dim     beta  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+      high_dim     beta  MMLN        w_chain    0.0000000            0 0e+00  PASS
+      high_dim     beta  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+      high_dim     beta  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+      high_dim     beta  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+ near_singular normbeta  FMLN     beta_chain    0.0000000            0 1e-06  PASS
+ near_singular normbeta  FMLN    sigma_chain    0.0000000            0 1e-06  PASS
+ near_singular normbeta  FMLN        w_chain    0.0000000            0 1e-06  PASS
+ near_singular normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+ near_singular     norm  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+ near_singular     norm  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+ near_singular     norm  FMLN        w_chain    0.0000000            0 0e+00  PASS
+ near_singular     norm  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+ near_singular     beta  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+ near_singular     beta  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+ near_singular     beta  FMLN        w_chain    0.0000000            0 0e+00  PASS
+ near_singular     beta  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+ near_singular normbeta  MMLN     beta_chain    0.0000000            0 1e-06  PASS
+ near_singular normbeta  MMLN    sigma_chain    0.0000000            0 1e-06  PASS
+ near_singular normbeta  MMLN        w_chain    0.0000000            0 1e-06  PASS
+ near_singular normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+ near_singular normbeta  MMLN      phi_chain    0.0000000            0 1e-06  PASS
+ near_singular normbeta  MMLN      psi_chain    0.0000000            0 1e-06  PASS
+ near_singular     norm  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+ near_singular     norm  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+ near_singular     norm  MMLN        w_chain    0.0000000            0 0e+00  PASS
+ near_singular     norm  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+ near_singular     norm  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+ near_singular     norm  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+ near_singular     beta  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+ near_singular     beta  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+ near_singular     beta  MMLN        w_chain    0.0000000            0 0e+00  PASS
+ near_singular     beta  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+ near_singular     beta  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+ near_singular     beta  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+   large_coefs normbeta  FMLN     beta_chain    0.0000000            0 1e-06  PASS
+   large_coefs normbeta  FMLN    sigma_chain    0.0000000            0 1e-06  PASS
+   large_coefs normbeta  FMLN        w_chain    0.0000000            0 1e-06  PASS
+   large_coefs normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+   large_coefs     norm  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+   large_coefs     norm  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+   large_coefs     norm  FMLN        w_chain    0.0000000            0 0e+00  PASS
+   large_coefs     norm  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+   large_coefs     beta  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+   large_coefs     beta  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+   large_coefs     beta  FMLN        w_chain    0.0000000            0 0e+00  PASS
+   large_coefs     beta  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+   large_coefs normbeta  MMLN     beta_chain    0.0000000            0 1e-06  PASS
+   large_coefs normbeta  MMLN    sigma_chain    0.0000000            0 1e-06  PASS
+   large_coefs normbeta  MMLN        w_chain    0.0000000            0 1e-06  PASS
+   large_coefs normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+   large_coefs normbeta  MMLN      phi_chain    0.0000000            0 1e-06  PASS
+   large_coefs normbeta  MMLN      psi_chain    0.0000000            0 1e-06  PASS
+   large_coefs     norm  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+   large_coefs     norm  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+   large_coefs     norm  MMLN        w_chain    0.0000000            0 0e+00  PASS
+   large_coefs     norm  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+   large_coefs     norm  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+   large_coefs     norm  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+   large_coefs     beta  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+   large_coefs     beta  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+   large_coefs     beta  MMLN        w_chain    0.0000000            0 0e+00  PASS
+   large_coefs     beta  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+   large_coefs     beta  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+   large_coefs     beta  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+    unbalanced normbeta  FMLN     beta_chain    0.0000000            0 1e-06  PASS
+    unbalanced normbeta  FMLN    sigma_chain    0.0000000            0 1e-06  PASS
+    unbalanced normbeta  FMLN        w_chain    0.0000000            0 1e-06  PASS
+    unbalanced normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+    unbalanced     norm  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+    unbalanced     norm  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+    unbalanced     norm  FMLN        w_chain    0.0000000            0 0e+00  PASS
+    unbalanced     norm  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+    unbalanced     beta  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+    unbalanced     beta  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+    unbalanced     beta  FMLN        w_chain    0.0000000            0 0e+00  PASS
+    unbalanced     beta  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+    unbalanced normbeta  MMLN     beta_chain    0.0000000            0 1e-06  PASS
+    unbalanced normbeta  MMLN    sigma_chain    0.0000000            0 1e-06  PASS
+    unbalanced normbeta  MMLN        w_chain    0.0000000            0 1e-06  PASS
+    unbalanced normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+    unbalanced normbeta  MMLN      phi_chain    0.0000000            0 1e-06  PASS
+    unbalanced normbeta  MMLN      psi_chain    0.0000000            0 1e-06  PASS
+    unbalanced     norm  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+    unbalanced     norm  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+    unbalanced     norm  MMLN        w_chain    0.0000000            0 0e+00  PASS
+    unbalanced     norm  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+    unbalanced     norm  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+    unbalanced     norm  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+    unbalanced     beta  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+    unbalanced     beta  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+    unbalanced     beta  MMLN        w_chain    0.0000000            0 0e+00  PASS
+    unbalanced     beta  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+    unbalanced     beta  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+    unbalanced     beta  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+   many_groups normbeta  FMLN     beta_chain    0.0000000            0 1e-06  PASS
+   many_groups normbeta  FMLN    sigma_chain    0.0000000            0 1e-06  PASS
+   many_groups normbeta  FMLN        w_chain    0.0000000            0 1e-06  PASS
+   many_groups normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+   many_groups     norm  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+   many_groups     norm  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+   many_groups     norm  FMLN        w_chain    0.0000000            0 0e+00  PASS
+   many_groups     norm  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+   many_groups     beta  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+   many_groups     beta  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+   many_groups     beta  FMLN        w_chain    0.0000000            0 0e+00  PASS
+   many_groups     beta  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+   many_groups normbeta  MMLN     beta_chain    0.0000000            0 1e-06  PASS
+   many_groups normbeta  MMLN    sigma_chain    0.0000000            0 1e-06  PASS
+   many_groups normbeta  MMLN        w_chain    0.0000000            0 1e-06  PASS
+   many_groups normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+   many_groups normbeta  MMLN      phi_chain    0.0000000            0 1e-06  PASS
+   many_groups normbeta  MMLN      psi_chain    0.0000000            0 1e-06  PASS
+   many_groups     norm  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+   many_groups     norm  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+   many_groups     norm  MMLN        w_chain    0.0000000            0 0e+00  PASS
+   many_groups     norm  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+   many_groups     norm  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+   many_groups     norm  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+   many_groups     beta  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+   many_groups     beta  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+   many_groups     beta  MMLN        w_chain    0.0000000            0 0e+00  PASS
+   many_groups     beta  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+   many_groups     beta  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+   many_groups     beta  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+  dominant_cat normbeta  FMLN     beta_chain    0.0000000            0 1e-06  PASS
+  dominant_cat normbeta  FMLN    sigma_chain    0.0000000            0 1e-06  PASS
+  dominant_cat normbeta  FMLN        w_chain    0.0000000            0 1e-06  PASS
+  dominant_cat normbeta  FMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+  dominant_cat     norm  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     norm  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     norm  FMLN        w_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     norm  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     beta  FMLN     beta_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     beta  FMLN    sigma_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     beta  FMLN        w_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     beta  FMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+  dominant_cat normbeta  MMLN     beta_chain    0.0000000            0 1e-06  PASS
+  dominant_cat normbeta  MMLN    sigma_chain    0.0000000            0 1e-06  PASS
+  dominant_cat normbeta  MMLN        w_chain    0.0000000            0 1e-06  PASS
+  dominant_cat normbeta  MMLN mhaccept_chain    0.0000000            0 1e-10  PASS
+  dominant_cat normbeta  MMLN      phi_chain    0.0000000            0 1e-06  PASS
+  dominant_cat normbeta  MMLN      psi_chain    0.0000000            0 1e-06  PASS
+  dominant_cat     norm  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     norm  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     norm  MMLN        w_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     norm  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     norm  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     norm  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     beta  MMLN     beta_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     beta  MMLN    sigma_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     beta  MMLN        w_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     beta  MMLN mhaccept_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     beta  MMLN      phi_chain    0.0000000            0 0e+00  PASS
+  dominant_cat     beta  MMLN      psi_chain    0.0000000            0 0e+00  PASS
+      baseline normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+      baseline normbeta MDRES      residuals    0.0000000           NA 1e-06  PASS
+      baseline     norm MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+      baseline     norm MDRES      residuals    0.0000000           NA 1e-06  PASS
+      baseline     beta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+      baseline     beta MDRES      residuals    0.0000000           NA 1e-06  PASS
+   zero_counts normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+   zero_counts normbeta MDRES      residuals    0.0000000           NA 1e-06  PASS
+   zero_counts     norm MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+   zero_counts     norm MDRES      residuals    0.0000000           NA 1e-06  PASS
+   zero_counts     beta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+   zero_counts     beta MDRES      residuals    0.0000000           NA 1e-06  PASS
+   tiny_counts normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+   tiny_counts normbeta MDRES      residuals    0.3424810           NA 1e-06  FAIL
+   tiny_counts     norm MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+   tiny_counts     norm MDRES      residuals    0.0000000           NA 1e-06  PASS
+   tiny_counts     beta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+   tiny_counts     beta MDRES      residuals    0.0000000           NA 1e-06  PASS
+  large_counts normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+  large_counts normbeta MDRES      residuals    0.0000000           NA 1e-06  PASS
+  large_counts     norm MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+  large_counts     norm MDRES      residuals    0.0000000           NA 1e-06  PASS
+  large_counts     beta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+  large_counts     beta MDRES      residuals    0.0000000           NA 1e-06  PASS
+      high_dim normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+      high_dim normbeta MDRES      residuals    0.0000000           NA 1e-06  PASS
+      high_dim     norm MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+      high_dim     norm MDRES      residuals    0.0000000           NA 1e-06  PASS
+      high_dim     beta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+      high_dim     beta MDRES      residuals    0.0000000           NA 1e-06  PASS
+ near_singular normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+ near_singular normbeta MDRES      residuals    0.0000000           NA 1e-06  PASS
+ near_singular     norm MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+ near_singular     norm MDRES      residuals    0.0000000           NA 1e-06  PASS
+ near_singular     beta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+ near_singular     beta MDRES      residuals    0.0000000           NA 1e-06  PASS
+   large_coefs normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+   large_coefs normbeta MDRES      residuals    0.0000000           NA 1e-06  PASS
+   large_coefs     norm MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+   large_coefs     norm MDRES      residuals    0.2799469           NA 1e-06  FAIL
+   large_coefs     beta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+   large_coefs     beta MDRES      residuals    0.0000000           NA 1e-06  PASS
+    unbalanced normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+    unbalanced normbeta MDRES      residuals    0.0000000           NA 1e-06  PASS
+    unbalanced     norm MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+    unbalanced     norm MDRES      residuals    0.0000000           NA 1e-06  PASS
+    unbalanced     beta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+    unbalanced     beta MDRES      residuals    0.0000000           NA 1e-06  PASS
+   many_groups normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+   many_groups normbeta MDRES      residuals    0.0000000           NA 1e-06  PASS
+   many_groups     norm MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+   many_groups     norm MDRES      residuals    0.0000000           NA 1e-06  PASS
+   many_groups     beta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+   many_groups     beta MDRES      residuals    0.0000000           NA 1e-06  PASS
+  dominant_cat normbeta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+  dominant_cat normbeta MDRES      residuals    0.0000000           NA 1e-06  PASS
+  dominant_cat     norm MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+  dominant_cat     norm MDRES      residuals    0.0000000           NA 1e-06  PASS
+  dominant_cat     beta MDRES    Y_pred_list    0.0000000           NA 1e-06  PASS
+  dominant_cat     beta MDRES      residuals    0.0000000           NA 1e-06  PASS
+
+== SUMMARY ==
+  Total checks: 360  |  PASS: 358  |  FAIL: 2
+
+Failed checks:
+  tiny_counts / normbeta / MDRES / residuals  max|diff|=3.42e-01  tol=1e-06
+  large_coefs / norm / MDRES / residuals  max|diff|=2.80e-01  tol=1e-06
+
