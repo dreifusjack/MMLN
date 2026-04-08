@@ -114,11 +114,14 @@ Rcpp::NumericVector mdres_core_cpp(
             continue;
         }
 
-        // Match upstream R: any(eigen(Sig, symmetric=TRUE)$values < 1e-8) → singular
-        // Both R's eigen(symmetric=TRUE) and arma::eig_sym use LAPACK dsyev which
-        // only reads the lower triangle — no explicit symmetrization needed.
-        // R returns NA without calling runif(), so we must also skip to keep
-        // the RNG stream in sync.
+        // arma::cov can produce tiny asymmetries from floating-point
+        // rounding, which makes eig_sym() reject the matrix. Force
+        // exact symmetry: S = (S + S^T) / 2
+        S = (S + S.t()) / 2.0;
+
+        // Match upstream R: any(eigen(Sig)$values < 1e-8) → singular
+        // R returns NA without calling runif(), so we must also skip
+        // to keep the RNG stream in sync.
         const arma::vec ev = arma::eig_sym(S);
         if (ev.min() < 1e-8)
         {
@@ -127,12 +130,17 @@ Rcpp::NumericVector mdres_core_cpp(
             continue;
         }
 
-        // Invert S via arma::inv() which uses LAPACK dgetrf/dgetri,
-        // matching R's solve(cov) which uses LAPACK dgesv.
-        // Eigen's LLT/PartialPivLU use different implementations that
-        // produce slightly different results on ill-conditioned matrices.
-        arma::mat S_inv;
-        if (!arma::inv(S_inv, S))
+        // diagonal jitter for numerical stability before Cholesky
+        S.diag() += 1e-8;
+
+        // map S into Eigen (arma and Eigen both use column-major; zero copy)
+        const Eigen::MatrixXd S_eig =
+            Eigen::Map<const Eigen::MatrixXd>(S.memptr(), d, d);
+
+        // Cholesky factorization: S = L L^T
+        // replaces R: apply(obsi, 1, mahalanobis, center=mu, cov=S)
+        Eigen::LLT<Eigen::MatrixXd> llt(S_eig);
+        if (llt.info() != Eigen::Success)
         {
             z_resids[i] = NA_REAL;
             ++n_singular;
@@ -143,26 +151,32 @@ Rcpp::NumericVector mdres_core_cpp(
         // replaces R: mu_all <- apply(pred_array, 1:2, mean)
         const arma::rowvec mu = arma::mean(samp, 0); // 1 x d
 
+        // map samp and mu into Eigen views (zero copy)
+        const Eigen::MatrixXd samp_eig =
+            Eigen::Map<const Eigen::MatrixXd>(samp.memptr(), P, d);
+        const Eigen::RowVectorXd mu_eig =
+            Eigen::Map<const Eigen::RowVectorXd>(mu.memptr(), d);
+
         // build centered (P+1) x d matrix:
         //   row 0     = alr_obs[i,] - mu   (the observed point)
         //   rows 1..P = samp - mu           (the posterior predictive points)
-        arma::mat centered(P + 1, d);
-        centered.row(0) = alr_obs.row(i) - mu;
-        for (int k = 0; k < P; ++k)
+        Eigen::MatrixXd centered(P + 1, d);
+        for (int j = 0; j < d; ++j)
         {
-            centered.row(k + 1) = samp.row(k) - mu;
+            centered(0, j) = alr_obs(i, j) - mu(j);
         }
+        centered.bottomRows(P).noalias() = samp_eig.rowwise() - mu_eig;
 
-        // row-wise Mahalanobis: md_j = rowSums((centered %*% S_inv) * centered)
-        // matches R: rowSums(x %*% solve(cov) * x) inside mahalanobis()
-        const arma::mat tmp = centered * S_inv;
-        const arma::vec mds = arma::sum(tmp % centered, 1); // (P+1) x 1
+        // row-wise Mahalanobis distances via a single triangular solve:
+        //   md_j = || L^{-1} centered_j ||^2
+        // replaces R: apply(obsi, 1, mahalanobis, center = mu, cov = S)
+        const Eigen::MatrixXd Z =
+            llt.matrixL().solve(centered.transpose());
+        const Eigen::RowVectorXd mds = Z.colwise().squaredNorm(); // 1 x (P+1)
 
         const double obs_md = mds(0);
 
         // sort predictive distances for ECDF lookup
-        // replaces R: sort(post_vals) and order()
-        // std::sort is O(P log P), then binary search is O(log P) per query
         std::vector<double> sorted_post(P);
         for (int k = 0; k < P; ++k)
         {
