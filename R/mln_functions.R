@@ -263,6 +263,8 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
   }
   save_i <- 1
 
+  group_idx <- build_group_idx(Z)
+
   for(it in seq_len(n_iter)) {
     # current mean
     Mu  <- X %*% beta + Z %*% psi   # N x d
@@ -306,13 +308,7 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
 
     # update random intercepts psi_j
     R_tot <- W - X %*% beta
-    for(j in seq_len(m)) {
-      idx <- which(Z[, j] == 1)
-      R_j <- R_tot[idx, , drop = FALSE]
-      V_j <- chol2inv(chol(chol2inv(chol(Phi)) + length(idx) * Sigma_inv))
-      M_j <- V_j %*% (Sigma_inv %*% colSums(R_j))
-      psi[j, ] <- mvnfast::rmvn(1, mu = as.vector(M_j), sigma = V_j)
-    }
+    psi   <- update_psi_cpp(group_idx, R_tot, Phi, Sigma_inv)
 
     # update Phi
     S_psi <- t(psi) %*% psi
