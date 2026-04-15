@@ -256,6 +256,7 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
   # pre-compute group membership indices once (Z is constant across iterations)
   group_indices <- lapply(seq_len(m), function(j) which(Z[, j] == 1))
   group_sizes   <- lengths(group_indices)
+  unique_sizes  <- unique(group_sizes)
 
   warned_na_ratio <- FALSE
   if(verbose) {
