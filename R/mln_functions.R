@@ -306,25 +306,23 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
     W[is.na(W)] <- 0
 
     # update random intercepts psi_j
-    R_tot      <- W - X %*% beta
-    Phi_inv    <- chol2inv(chol(Phi))
+    R_tot   <- W - X %*% beta
+    Phi_inv <- chol2inv(chol(Phi))
 
-    # per-group sums using pre-computed indices
-    group_sums <- matrix(0, m, d)
-    for(j in seq_len(m))
-      group_sums[j, ] <- colSums(R_tot[group_indices[[j]], , drop = FALSE])
+    # V_j depends only on group size; compute once per unique size (not once per group)
+    V_by_size <- setNames(
+      lapply(unique_sizes, function(n) chol2inv(chol(Phi_inv + n * Sigma_inv))),
+      as.character(unique_sizes)
+    )
 
-    # V_j and M_mat vectorized per unique size
-    M_mat   <- matrix(0, m, d)
-    V_cache <- setNames(vector("list", length(unique_sizes)), as.character(unique_sizes))
-    for(sz in unique_sizes) {
-      which_j          <- which(group_sizes == sz)
-      V_j              <- chol2inv(chol(Phi_inv + sz * Sigma_inv))
-      V_cache[[as.character(sz)]] <- V_j
-      M_mat[which_j, ] <- group_sums[which_j, , drop = FALSE] %*% (Sigma_inv %*% V_j)
+    # group indices pre-computed outside MCMC loop; M_j uses upstream column-vector
+    # formula for bit-exact arithmetic; V_j reused from cache above
+    for(j in seq_len(m)) {
+      R_j      <- R_tot[group_indices[[j]], , drop = FALSE]
+      V_j      <- V_by_size[[as.character(group_sizes[j])]]
+      M_j      <- V_j %*% (Sigma_inv %*% colSums(R_j))
+      psi[j, ] <- mvnfast::rmvn(1, mu = as.vector(M_j), sigma = V_j)
     }
-    for(j in seq_len(m))
-      psi[j, ] <- mvnfast::rmvn(1, mu = M_mat[j, ], sigma = V_cache[[as.character(group_sizes[j])]])
 
     # update Phi
     S_psi <- t(psi) %*% psi
