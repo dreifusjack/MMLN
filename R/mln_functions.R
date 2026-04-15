@@ -305,22 +305,17 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
     W[is.na(W)] <- 0
 
     # update random intercepts psi_j
-    R_tot   <- W - X %*% beta
-    Phi_inv <- chol2inv(chol(Phi))
+    R_tot      <- W - X %*% beta
+    Phi_inv    <- chol2inv(chol(Phi))
+    group_sums <- crossprod(Z, R_tot)  # m×d: row j = colSums(R_tot[group_j, ])
 
-    # compute V_j once per unique group size (V_j depends only on n_j, not j itself)
-    unique_sizes <- unique(group_sizes)
-    V_by_size <- setNames(
-      lapply(unique_sizes, function(n) chol2inv(chol(Phi_inv + n * Sigma_inv))),
-      as.character(unique_sizes)
-    )
-
-    # group indices pre-computed outside MCMC loop; V_j reused from cache above
-    for(j in seq_len(m)) {
-      R_j      <- R_tot[group_indices[[j]], , drop = FALSE]
-      V_j      <- V_by_size[[as.character(group_sizes[j])]]
-      M_j      <- V_j %*% (Sigma_inv %*% colSums(R_j))
-      psi[j, ] <- mvnfast::rmvn(1, mu = as.vector(M_j), sigma = V_j)
+    # outer loop over unique sizes only (usually 1); no per-group loop needed
+    for(sz in unique_sizes) {
+      which_j        <- which(group_sizes == sz)
+      k              <- length(which_j)
+      V_j            <- chol2inv(chol(Phi_inv + sz * Sigma_inv))
+      M_sub          <- group_sums[which_j, , drop = FALSE] %*% (Sigma_inv %*% V_j)
+      psi[which_j, ] <- M_sub + matrix(rnorm(k * d), k, d) %*% chol(V_j)
     }
 
     # update Phi
