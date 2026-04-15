@@ -315,20 +315,12 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
       as.character(unique_sizes)
     )
 
-    # compute posterior means (loop unavoidable; indices pre-computed outside MCMC loop)
-    M_mat <- matrix(0, nrow = m, ncol = d)
+    # group indices pre-computed outside MCMC loop; V_j reused from cache above
     for(j in seq_len(m)) {
-      R_j       <- R_tot[group_indices[[j]], , drop = FALSE]
-      V_j       <- V_by_size[[as.character(group_sizes[j])]]
-      M_mat[j,] <- V_j %*% (Sigma_inv %*% colSums(R_j))
-    }
-
-    # batch sample all groups sharing the same V_j
-    for(sz in unique_sizes) {
-      which_j <- which(group_sizes == sz)
-      psi[which_j, ] <- mvnfast::rmvn(length(which_j),
-                                      mu    = M_mat[which_j, , drop = FALSE],
-                                      sigma = V_by_size[[as.character(sz)]])
+      R_j      <- R_tot[group_indices[[j]], , drop = FALSE]
+      V_j      <- V_by_size[[as.character(group_sizes[j])]]
+      M_j      <- V_j %*% (Sigma_inv %*% colSums(R_j))
+      psi[j, ] <- mvnfast::rmvn(1, mu = as.vector(M_j), sigma = V_j)
     }
 
     # update Phi
