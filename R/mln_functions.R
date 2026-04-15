@@ -310,19 +310,13 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
     Phi_inv    <- chol2inv(chol(Phi))
     group_sums <- crossprod(Z, R_tot)  # m×d: row j = colSums(R_tot[group_j, ])
 
-    # compute M_mat and V_j per unique size (vectorized; no per-group subsetting)
-    M_mat   <- matrix(0, m, d)
-    V_cache <- setNames(vector("list", length(unique_sizes)), as.character(unique_sizes))
+    # outer loop over unique sizes only (often just 1); no per-group loop needed
     for(sz in unique_sizes) {
-      which_j          <- which(group_sizes == sz)
-      V_j              <- chol2inv(chol(Phi_inv + sz * Sigma_inv))
-      V_cache[[as.character(sz)]] <- V_j
-      M_mat[which_j, ] <- group_sums[which_j, , drop = FALSE] %*% (Sigma_inv %*% V_j)
-    }
-
-    # sample psi with rmvn to preserve RNG stream
-    for(j in seq_len(m)) {
-      psi[j, ] <- mvnfast::rmvn(1, mu = M_mat[j, ], sigma = V_cache[[as.character(group_sizes[j])]])
+      which_j        <- which(group_sizes == sz)
+      k              <- length(which_j)
+      V_j            <- chol2inv(chol(Phi_inv + sz * Sigma_inv))
+      M_sub          <- group_sums[which_j, , drop = FALSE] %*% (Sigma_inv %*% V_j)
+      psi[which_j, ] <- M_sub + matrix(rnorm(k * d), k, d) %*% chol(V_j)
     }
 
     # update Phi
