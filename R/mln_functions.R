@@ -309,20 +309,22 @@ MMLN <- function(Y, X, Z, n_iter = 1000, burn_in = 0, thin = 1, mh_scale = 1, pr
     R_tot      <- W - X %*% beta
     Phi_inv    <- chol2inv(chol(Phi))
 
-    # per-group sums using pre-computed indices (bit-exact, no crossprod)
+    # per-group sums using pre-computed indices
     group_sums <- matrix(0, m, d)
     for(j in seq_len(m))
       group_sums[j, ] <- colSums(R_tot[group_indices[[j]], , drop = FALSE])
 
-    # batch rmvn per unique size: one sitmo call instead of m individual calls
+    # V_j and M_mat vectorized per unique size
+    M_mat   <- matrix(0, m, d)
+    V_cache <- setNames(vector("list", length(unique_sizes)), as.character(unique_sizes))
     for(sz in unique_sizes) {
-      which_j        <- which(group_sizes == sz)
-      k              <- length(which_j)
-      V_j            <- chol2inv(chol(Phi_inv + sz * Sigma_inv))
-      L_V_j          <- chol(V_j)
-      M_sub          <- group_sums[which_j, , drop = FALSE] %*% (Sigma_inv %*% V_j)
-      psi[which_j, ] <- mvnfast::rmvn(k, mu = rep(0, d), sigma = L_V_j, isChol = TRUE) + M_sub
+      which_j          <- which(group_sizes == sz)
+      V_j              <- chol2inv(chol(Phi_inv + sz * Sigma_inv))
+      V_cache[[as.character(sz)]] <- V_j
+      M_mat[which_j, ] <- group_sums[which_j, , drop = FALSE] %*% (Sigma_inv %*% V_j)
     }
+    for(j in seq_len(m))
+      psi[j, ] <- mvnfast::rmvn(1, mu = M_mat[j, ], sigma = V_cache[[as.character(group_sizes[j])]])
 
     # update Phi
     S_psi <- t(psi) %*% psi
