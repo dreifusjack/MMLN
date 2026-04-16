@@ -16,7 +16,7 @@ else
 endif
 .SHELLFLAGS := -euo pipefail -c
 
-.PHONY: help generate-data clone-upstream reference test compare clean clean-all clean-upstream
+.PHONY: help generate-data clone-upstream reference test compare clean clean-all clean-upstream real-data-reference real-data-test
 
 # Colors for output
 GREEN  := \033[0;32m
@@ -29,8 +29,10 @@ OK     := [OK]
 FAIL   := [FAIL]
 
 # Defaults
-FUNC     ?= all
-SCENARIO ?= all
+FUNC         ?= all
+SCENARIO     ?= all
+REAL_N_ITER  ?= 2000
+REAL_BURN_IN ?= 500
 
 # Paths
 SCRIPTS  := $(CURDIR)/scripts
@@ -74,6 +76,16 @@ help: ## Show available commands
 	@printf "    make test FUNC=fmln SCENARIO=baseline\n"
 	@printf "    make test FUNC=mdres\n"
 	@printf "    make test FUNC=mmln SCENARIO=\"baseline zero_counts\"\n"
+	@printf "\n$(YELLOW)  Real-data benchmarks (upstream vs fork on actual pollen + MLB data):$(NC)\n\n"
+	@printf "  $(GREEN)%-25s$(NC) %s\n" "real-data-reference" "Install upstream; fit FMLN (pollen) + MMLN (MLB), save to fixtures/"
+	@printf "  $(GREEN)%-25s$(NC) %s\n" "real-data-test"      "Install fork;     fit FMLN (pollen) + MMLN (MLB), compare timing"
+	@printf "\n$(YELLOW)  Real-data variables:$(NC)\n"
+	@printf "    REAL_N_ITER=<n>   MCMC iterations for real-data runs (default: 2000)\n"
+	@printf "    REAL_BURN_IN=<n>  Burn-in for real-data runs           (default: 500)\n"
+	@printf "\n$(YELLOW)  Real-data examples:$(NC)\n"
+	@printf "    make real-data-reference\n"
+	@printf "    make real-data-test\n"
+	@printf "    make real-data-test REAL_N_ITER=3000\n"
 	@printf "\n"
 
 check-deps: ## Check required dependencies (system + R packages)
@@ -156,3 +168,20 @@ clean-upstream: ## Remove the local upstream/ clone
 	@printf "$(YELLOW)Removing upstream/ clone...$(NC)\n"
 	@rm -rf "$(UPSTREAM)"
 	@printf "  $(GREEN)$(OK)$(NC) Removed upstream/\n\n"
+
+real-data-reference: ## Install upstream and run FMLN (pollen) + MMLN (MLB), save timing to fixtures/
+	@printf "$(BLUE)Installing upstream MMLN from upstream/...$(NC)\n"
+	@Rscript -e 'Rcpp::compileAttributes("$(UPSTREAM)")'
+	@Rscript -e 'devtools::install("$(UPSTREAM)", force = TRUE, quiet = TRUE)'
+	@printf "  $(GREEN)$(OK)$(NC) Upstream installed\n\n"
+	@printf "$(BLUE)Running real-data reference (REAL_N_ITER=$(REAL_N_ITER), REAL_BURN_IN=$(REAL_BURN_IN))...$(NC)\n"
+	@Rscript "$(SCRIPTS)/run_real_data_reference.R" "$(REPO)" "$(REAL_N_ITER)" "$(REAL_BURN_IN)"
+	@printf "\n  $(GREEN)$(OK)$(NC) Reference fixtures saved to fixtures/\n\n"
+
+real-data-test: ## Install fork and run FMLN (pollen) + MMLN (MLB), print timing vs reference
+	@printf "$(BLUE)Installing fork MMLN (local)...$(NC)\n"
+	@Rscript -e 'Rcpp::compileAttributes("$(REPO)")'
+	@Rscript -e 'devtools::install("$(REPO)", force = TRUE, quiet = TRUE)'
+	@printf "  $(GREEN)$(OK)$(NC) Fork installed\n\n"
+	@printf "$(BLUE)Running real-data fork test (REAL_N_ITER=$(REAL_N_ITER), REAL_BURN_IN=$(REAL_BURN_IN))...$(NC)\n"
+	@Rscript "$(SCRIPTS)/run_real_data_test.R" "$(REPO)" "$(REAL_N_ITER)" "$(REAL_BURN_IN)"
