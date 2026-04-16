@@ -106,9 +106,7 @@ Rcpp::NumericVector mdres_core_cpp(
         // replaces R: Sigma_all[[i]] <- cov(t(pred_array[i,,]))
         arma::mat S = arma::cov(samp); // d x d
 
-        // If predictive samples are degenerate (e.g. all-zero counts that
-        // produce NaN after log-ratio transform), the covariance will contain
-        // NaN/Inf. Skip these observations and return NA.
+        // Match upstream R: any(is.na(Sig)) → singular
         if (!S.is_finite())
         {
             z_resids[i] = NA_REAL;
@@ -121,7 +119,9 @@ Rcpp::NumericVector mdres_core_cpp(
         // exact symmetry: S = (S + S^T) / 2
         S = (S + S.t()) / 2.0;
 
-        // singularity check: count obs where min eigenvalue < 1e-8
+        // Match upstream R: any(eigen(Sig)$values < 1e-8) → singular
+        // R returns NA without calling runif(), so we must also skip
+        // to keep the RNG stream in sync.
         const arma::vec ev = arma::eig_sym(S);
         if (ev.min() < 1e-8)
         {
@@ -160,9 +160,6 @@ Rcpp::NumericVector mdres_core_cpp(
         // build centered (P+1) x d matrix:
         //   row 0     = alr_obs[i,] - mu   (the observed point)
         //   rows 1..P = samp - mu           (the posterior predictive points)
-        //
-        // the .rowwise() broadcast replaces R sweep(pred_array, 2, mu)
-        // no intermediate matrix allocated
         Eigen::MatrixXd centered(P + 1, d);
         for (int j = 0; j < d; ++j)
         {
@@ -172,11 +169,6 @@ Rcpp::NumericVector mdres_core_cpp(
 
         // row-wise Mahalanobis distances via a single triangular solve:
         //   md_j = || L^{-1} centered_j ||^2
-        //
-        // solve L * Z = centered^T  ->  Z is d x (P+1)
-        // then squared column norms give the Mahalanobis distances
-        // Eigen expression template avoids intermediate allocation
-        //
         // replaces R: apply(obsi, 1, mahalanobis, center = mu, cov = S)
         const Eigen::MatrixXd Z =
             llt.matrixL().solve(centered.transpose());
@@ -185,8 +177,6 @@ Rcpp::NumericVector mdres_core_cpp(
         const double obs_md = mds(0);
 
         // sort predictive distances for ECDF lookup
-        // replaces R: sort(post_vals) and order()
-        // std::sort is O(P log P), then binary search is O(log P) per query
         std::vector<double> sorted_post(P);
         for (int k = 0; k < P; ++k)
         {
@@ -247,7 +237,7 @@ Rcpp::NumericVector mdres_core_cpp(
     if (n_singular > 0)
     {
         Rcpp::warning(
-             "Covariance matrix singular for %d observation(s); results may be unreliable.",
+            "Covariance matrix singular for %d observation(s); results may be unreliable.",
             n_singular);
     }
 

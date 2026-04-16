@@ -1,0 +1,66 @@
+--- FMLN/MMLN model runs ---
+
+  [ 2/60] baseline             normbeta    FMLN:   3.7s  MMLN:   5.7s
+  [ 4/60] baseline             norm        FMLN:   1.6s  MMLN:   3.1s
+  [ 6/60] baseline             beta        FMLN:   2.6s  MMLN:   4.3s
+  [ 8/60] zero_counts          normbeta    FMLN:   9.3s  MMLN:  10.7s
+  [10/60] zero_counts          norm        FMLN:   2.3s  MMLN:   3.5s
+  [12/60] zero_counts          beta        FMLN:   5.2s  MMLN:   7.1s
+  [14/60] tiny_counts          normbeta    FMLN:   3.2s  MMLN:   4.3s
+  [16/60] tiny_counts          norm        FMLN:   0.8s  MMLN:   2.0s
+  [18/60] tiny_counts          beta        FMLN:   2.1s  MMLN:   3.2s
+  [20/60] large_counts         normbeta    FMLN:   1.9s  MMLN:   2.6s
+  [22/60] large_counts         norm        FMLN:   0.7s  MMLN:   1.5s
+  [24/60] large_counts         beta        FMLN:   1.5s  MMLN:   2.4s
+  [26/60] high_dim             normbeta    FMLN:   7.4s  MMLN:   8.2s
+  [28/60] high_dim             norm        FMLN:   2.4s  MMLN:   3.7s
+  [30/60] high_dim             beta        FMLN:   4.6s  MMLN:   5.8s
+  [32/60] near_singular        normbeta    FMLN:   3.7s  MMLN:   4.4s
+  [34/60] near_singular        norm        FMLN:   1.3s  MMLN:   2.5s
+  [36/60] near_singular        beta        FMLN:   2.4s  MMLN:   3.7s
+  [38/60] large_coefs          normbeta    FMLN:   2.9s  MMLN:   3.5s
+  [40/60] large_coefs          norm        FMLN:   0.8s  MMLN:   1.7s
+  [42/60] large_coefs          beta        FMLN:   2.1s  MMLN:   2.9s
+  [44/60] unbalanced           normbeta    FMLN:   3.6s  MMLN:   5.3s
+  [46/60] unbalanced           norm        FMLN:   1.2s  MMLN:   3.4s
+  [48/60] unbalanced           beta        FMLN:   2.5s  MMLN:   4.7s
+  [50/60] many_groups          normbeta    FMLN:   2.6s  MMLN:  15.0s
+  [52/60] many_groups          norm        FMLN:   0.8s  MMLN:  13.4s
+  [54/60] many_groups          beta        FMLN:   1.8s  MMLN:  14.2s
+  [56/60] dominant_cat         normbeta    FMLN:   1.5s  MMLN:   2.3s
+  [58/60] dominant_cat         norm        FMLN:   0.7s  MMLN:   1.4s
+  [60/60] dominant_cat         beta        FMLN:   1.2s  MMLN:   2.0s
+There were 11 warnings (use warnings() to see them)
+
+--- MDres runs (isolated, using upstream chain fixtures) ---
+
+  [ 1/30] baseline             normbeta      0.7s
+  [ 2/30] baseline             norm          0.6s
+  [ 3/30] baseline             beta          0.6s
+  [ 4/30] zero_counts          normbeta      0.6s
+  [ 5/30] zero_counts          norm          0.7s
+  [ 6/30] zero_counts          beta          0.7s
+  [ 7/30] tiny_counts          normbeta      0.5s
+  [ 8/30] tiny_counts          norm          0.5s
+  [ 9/30] tiny_counts          beta          0.5s
+  [10/30] large_counts         normbeta      0.5s
+  [11/30] large_counts         norm          0.4s
+  [12/30] large_counts         beta          0.4s
+  [13/30] high_dim             normbeta      0.6s
+  [14/30] high_dim             norm          0.6s
+  [15/30] high_dim             beta          0.6s
+  [16/30] near_singular        normbeta      0.5s
+  [17/30] near_singular        norm          0.5s
+  [18/30] near_singular        beta          0.5s
+  [19/30] large_coefs          normbeta      0.3s
+  [20/30] large_coefs          norm          0.3s
+  [21/30] large_coefs          beta          0.3s
+  [22/30] unbalanced           normbeta      0.5s
+  [23/30] unbalanced           norm          0.6s
+  [24/30] unbalanced           beta          0.6s
+  [25/30] many_groups          normbeta      0.6s
+  [26/30] many_groups          norm          0.7s
+  [27/30] many_groups          beta          0.7s
+  [28/30] dominant_cat         normbeta      0.3s
+  [29/30] dominant_cat         norm          0.3s
+  [30/30] dominant_cat         beta          0.3s

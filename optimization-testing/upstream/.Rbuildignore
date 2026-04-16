@@ -3,6 +3,3 @@
 ^correct_fit\.jpeg$
 ^incorrect_fit\.jpeg$
 ^testing$
-^\.git$
-^\.gitignore$
-^optimization-testing$
