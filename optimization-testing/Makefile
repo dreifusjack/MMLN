@@ -31,8 +31,9 @@ FAIL   := [FAIL]
 # Defaults
 FUNC         ?= all
 SCENARIO     ?= all
-REAL_N_ITER  ?= 2000
-REAL_BURN_IN ?= 500
+REAL_N_ITER  ?= 1000
+REAL_BURN_IN ?= 300
+REAL_MDRES_P ?= 50
 
 # Paths
 SCRIPTS  := $(CURDIR)/scripts
@@ -77,11 +78,12 @@ help: ## Show available commands
 	@printf "    make test FUNC=mdres\n"
 	@printf "    make test FUNC=mmln SCENARIO=\"baseline zero_counts\"\n"
 	@printf "\n$(YELLOW)  Real-data benchmarks (upstream vs fork on actual pollen + MLB data):$(NC)\n\n"
-	@printf "  $(GREEN)%-25s$(NC) %s\n" "real-data-reference" "Install upstream; fit FMLN (pollen) + MMLN (MLB), save to fixtures/"
-	@printf "  $(GREEN)%-25s$(NC) %s\n" "real-data-test"      "Install fork;     fit FMLN (pollen) + MMLN (MLB), compare timing"
+	@printf "  $(GREEN)%-25s$(NC) %s\n" "real-data-reference" "Install upstream; FMLN+MMLN+MDres on pollen/MLB, save to fixtures/"
+	@printf "  $(GREEN)%-25s$(NC) %s\n" "real-data-test"      "Install fork;     FMLN+MMLN+MDres on pollen/MLB, compare timing"
 	@printf "\n$(YELLOW)  Real-data variables:$(NC)\n"
-	@printf "    REAL_N_ITER=<n>   MCMC iterations for real-data runs (default: 2000)\n"
-	@printf "    REAL_BURN_IN=<n>  Burn-in for real-data runs           (default: 500)\n"
+	@printf "    REAL_N_ITER=<n>   MCMC iterations for real-data runs (default: 1000)\n"
+	@printf "    REAL_BURN_IN=<n>  Burn-in for real-data runs           (default: 300)\n"
+	@printf "    REAL_MDRES_P=<n>  MDres posterior predictive draws     (default:  50)\n"
 	@printf "\n$(YELLOW)  Real-data examples:$(NC)\n"
 	@printf "    make real-data-reference\n"
 	@printf "    make real-data-test\n"
@@ -188,7 +190,7 @@ real-data-reference: ## Install upstream and run FMLN (pollen) + MMLN (MLB), sav
 	@Rscript -e 'devtools::install("$(UPSTREAM)", force = TRUE, quiet = TRUE)'
 	@printf "  $(GREEN)$(OK)$(NC) Upstream installed\n\n"
 	@printf "$(BLUE)Running real-data reference (REAL_N_ITER=$(REAL_N_ITER), REAL_BURN_IN=$(REAL_BURN_IN))...$(NC)\n"
-	@Rscript "$(SCRIPTS)/run_real_data_reference.R" "$(REPO)" "$(REAL_N_ITER)" "$(REAL_BURN_IN)"
+	@Rscript "$(SCRIPTS)/run_real_data_reference.R" "$(REPO)" "$(REAL_N_ITER)" "$(REAL_BURN_IN)" "$(REAL_MDRES_P)"
 	@printf "\n  $(GREEN)$(OK)$(NC) Reference fixtures saved to fixtures/\n\n"
 
 real-data-test: ## Install fork and run FMLN (pollen) + MMLN (MLB), print timing vs reference
@@ -197,4 +199,4 @@ real-data-test: ## Install fork and run FMLN (pollen) + MMLN (MLB), print timing
 	@Rscript -e 'devtools::install("$(REPO)", force = TRUE, quiet = TRUE)'
 	@printf "  $(GREEN)$(OK)$(NC) Fork installed\n\n"
 	@printf "$(BLUE)Running real-data fork test (REAL_N_ITER=$(REAL_N_ITER), REAL_BURN_IN=$(REAL_BURN_IN))...$(NC)\n"
-	@Rscript "$(SCRIPTS)/run_real_data_test.R" "$(REPO)" "$(REAL_N_ITER)" "$(REAL_BURN_IN)"
+	@Rscript "$(SCRIPTS)/run_real_data_test.R" "$(REPO)" "$(REAL_N_ITER)" "$(REAL_BURN_IN)" "$(REAL_MDRES_P)"
