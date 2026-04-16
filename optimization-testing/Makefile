@@ -124,6 +124,19 @@ check-deps: ## Check required dependencies (system + R packages)
 		grep -q "ok" && \
 		printf "  $(GREEN)$(OK)$(NC) RcppEigen\n" || \
 		printf "  $(RED)$(FAIL)$(NC) RcppEigen    (install.packages('RcppEigen'))\n"
+	@printf "\n$(YELLOW)  R packages (real-data benchmarks):$(NC)\n"
+	@Rscript -e 'if (requireNamespace("MM", quietly=TRUE)) cat("  ok\n") else cat("  missing\n")' 2>/dev/null | \
+		grep -q "ok" && \
+		printf "  $(GREEN)$(OK)$(NC) MM           (pollen data)\n" || \
+		printf "  $(RED)$(FAIL)$(NC) MM           (needs libgmp-dev, then install.packages('MM'))\n"
+	@Rscript -e 'if (requireNamespace("Lahman", quietly=TRUE)) cat("  ok\n") else cat("  missing\n")' 2>/dev/null | \
+		grep -q "ok" && \
+		printf "  $(GREEN)$(OK)$(NC) Lahman       (MLB data)\n" || \
+		printf "  $(RED)$(FAIL)$(NC) Lahman       (install.packages('Lahman'))\n"
+	@Rscript -e 'if (requireNamespace("dplyr", quietly=TRUE)) cat("  ok\n") else cat("  missing\n")' 2>/dev/null | \
+		grep -q "ok" && \
+		printf "  $(GREEN)$(OK)$(NC) dplyr        (MLB data cleaning)\n" || \
+		printf "  $(RED)$(FAIL)$(NC) dplyr        (install.packages('dplyr'))\n"
 	@printf "\n"
 
 generate-data: ## Generate synthetic test datasets (no package install needed)
